@@ -97,7 +97,7 @@ All planning artifacts go in `.planning/`:
 
 **What are domain skills?**
 
-Framework/platform-specific knowledge that makes your plans concrete instead of generic.
+Full-fledged agent skills that exhaustively document how to build in a specific framework/platform. They make your plans concrete instead of generic.
 
 **Without domain skill:**
 ```
@@ -106,32 +106,45 @@ Action: Implement user login
 ```
 Generic. Not helpful.
 
-**With domain skill (Next.js):**
+**With domain skill (macOS apps):**
 ```
-Task: Create login API endpoint
-Files: src/app/api/auth/login/route.ts
-Action: POST endpoint using App Router conventions. Accept {email, password},
-validate with Prisma, return JWT in httpOnly cookie. Use jose library
-(not jsonwebtoken - ESM issues with Next.js 14).
-Verify: curl -X POST /api/auth/login returns 200 + Set-Cookie
+Task: Create login window
+Files: Sources/Views/LoginView.swift
+Action: SwiftUI view with @Bindable for User model. TextField for username/password.
+SecureField for password (uses system keychain). Submit button triggers validation
+logic. Use @FocusState for tab order. Add Command-L keyboard shortcut.
+Verify: xcodebuild test && open App.app (check tab order, keychain storage)
 ```
 Specific. Executable. Framework-appropriate.
 
-**Where they live:**
+**Structure of domain skills:**
 
-`~/.claude/skills/build/[domain]/references/*.md`
+```
+~/.claude/skills/build/[domain]/
+├── SKILL.md              # Router + essential principles
+├── workflows/            # build-new-app, add-feature, debug-app, etc.
+└── references/           # Exhaustive domain knowledge (often 10k+ lines)
+```
+
+**Domain skills are dual-purpose:**
+
+1. **Standalone skills** - Invoke with `Skill("build-macos-apps")` for guided development
+2. **Context for create-plans** - Loaded automatically when planning that domain
 
 **Example domains:**
-- `macos-apps` - Swift/SwiftUI macOS patterns, AppKit when needed, Xcode project structure
-- `iphone-apps` - Swift/SwiftUI iOS patterns, UIKit integration, device considerations
-- `example-nextjs` - Next.js App Router patterns, API routes, server components (included as example)
+- `macos-apps` - Swift/SwiftUI macOS (19 references, 10k+ lines)
+- `iphone-apps` - Swift/SwiftUI iOS
+- `unity-games` - Unity game development
+- `swift-midi-apps` - MIDI/audio apps
+- `with-agent-sdk` - Claude Agent SDK apps
+- `nextjs-ecommerce` - Next.js e-commerce
 
 **How it works:**
 
-1. Skill infers domain from your request ("build a macOS app" → macos-apps)
-2. Before creating PLAN.md, reads `~/.claude/skills/build/macos-apps/references/*.md`
-3. Uses that knowledge to write framework-specific tasks
-4. Result: Plans that match your actual tech stack
+1. Skill infers domain from your request ("build a macOS app" → build-macos-apps)
+2. Before creating PLAN.md, reads all `~/.claude/skills/build/macos-apps/references/*.md`
+3. Uses that exhaustive knowledge to write framework-specific tasks
+4. Result: Plans that match your actual tech stack with all the details
 
 **What if you don't have domain skills?**
 
@@ -139,13 +152,23 @@ Skill works fine without them - proceeds with general planning. But tasks will b
 
 ### Creating a Domain Skill
 
-See `build/example-nextjs/` for pattern. Create:
+Domain skills are created with [create-agent-skills](../create-agent-skills/) skill.
 
-```
-build/[your-domain]/
-└── references/
-    └── conventions.md     # Framework patterns, structure, commands
-```
+**Process:**
+
+1. `Skill("create-agent-skills")` → choose "Build a new skill"
+2. Name: `build-[your-domain]`
+3. Description: "Build [framework/platform] apps. Full lifecycle - build, debug, test, optimize, ship."
+4. Ask it to create exhaustive references covering:
+   - Architecture patterns
+   - Project scaffolding
+   - Common features (data, networking, UI)
+   - Testing and debugging
+   - Platform-specific conventions
+   - CLI workflow (how to build/run without IDE)
+   - Deployment/shipping
+
+**The skill should be comprehensive** - 5k-10k+ lines documenting everything about building in that domain. When create-plans loads it, the resulting PLAN.md tasks will be detailed and executable.
 
 ## Quality Controls
 
