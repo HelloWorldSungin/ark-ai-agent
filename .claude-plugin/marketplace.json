@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Curated Claude Code skills and commands for prompt engineering, playbook system (ACE pattern), and productivity workflows",
-    "version": "2.1.0"
+    "version": "2.2.0"
   },
   "plugins": [
     {
       "name": "ark-ai-agent",
       "source": "./",
       "description": "Skills and commands for prompt engineering, MCP servers, subagents, hooks, playbook system (ACE pattern), and productivity workflows",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "strict": true
     }
   ]

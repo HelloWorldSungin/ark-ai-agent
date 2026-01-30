@@ -313,6 +313,10 @@ Domain expertise is NOT needed for:
 </domain_expertise>
 
 <intake>
+**If a file path is provided as argument** (ends in `.md`, contains `/`, starts with `@`):
+- Route directly to `workflows/import-plan.md` — skip intake menu
+- Strip leading `@` if present (e.g., `@plan.md` → `plan.md`)
+
 Based on scan results, present context-aware options:
 
 **If handoff found:**
@@ -369,6 +373,7 @@ What would you like to do?
 | "transition", "complete", "done", "next" | `workflows/transition.md` |
 | "milestone", "ship", "v1.0", "release" | `workflows/complete-milestone.md` |
 | "sync linear", "linear", "create issues" | `workflows/sync-to-linear.md` |
+| file path provided (ends in `.md`, contains `/`, starts with `@`) | `workflows/import-plan.md` |
 | "guidance", "help", 4 | `workflows/get-guidance.md` |
 
 **Critical:** Plan execution should NOT invoke this skill. Use `/run-plan` for context efficiency (skill loads ~20k tokens, /run-plan loads ~5-7k).
@@ -473,7 +478,8 @@ All in `workflows/`:
 | handoff.md | Create context handoff for pausing |
 | resume.md | Load handoff, restore context |
 | get-guidance.md | Help decide planning approach |
-| sync-to-linear.md | Create Linear issues from ROADMAP.md phases |
+| sync-to-linear.md | Create Linear issues from ROADMAP.md phases with project + agent labels |
+| import-plan.md | Parse plan file → `.planning/` hierarchy with agent assignments |
 </workflows_index>
 
 <success_criteria>

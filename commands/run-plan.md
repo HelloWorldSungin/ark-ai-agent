@@ -1,10 +1,10 @@
 ---
 type: prompt
-description: Execute a PLAN.md file directly without loading planning skill context
+description: Execute a PLAN.md file or auto-dispatch next phase from Linear
 arguments:
   - name: plan_path
-    description: Path to PLAN.md file (e.g., .planning/phases/07-sidebar-reorganization/07-01-PLAN.md)
-    required: true
+    description: Path to PLAN.md file (optional — omit to auto-dispatch next phase from Linear)
+    required: false
 allowed-tools:
   - Read
   - Write
@@ -13,11 +13,19 @@ allowed-tools:
   - Glob
   - Grep
   - Task
+  - AskUserQuestion
   - mcp__plugin_linear_linear__list_issues
   - mcp__plugin_linear_linear__list_teams
+  - mcp__plugin_linear_linear__list_projects
   - mcp__plugin_linear_linear__update_issue
+  - mcp__plugin_linear_linear__update_project
   - mcp__plugin_linear_linear__create_comment
+  - mcp__plugin_linear_linear__get_issue
 ---
+
+{{#if plan_path}}
+
+## Mode: Direct Plan Execution (path provided)
 
 Execute the plan at {{plan_path}} using **intelligent segmentation** for optimal quality.
 
@@ -146,6 +154,127 @@ Execute the plan at {{plan_path}} using **intelligent segmentation** for optimal
        *Updated via /run-plan*
        ```
    - Present completion message with next steps
+
+{{else}}
+
+## Mode: Auto-Dispatch Next Phase from Linear (no args)
+
+Automatically find the next phase to execute from Linear, read its agent assignment, and dispatch to the correct subagent.
+
+**Process:**
+
+### Step 1: Resolve Linear Team and Project
+
+1. Resolve Linear team: check CLAUDE.md for `linear-team`, else `mcp__plugin_linear_linear__list_teams` → auto-select if one team
+2. List projects via `mcp__plugin_linear_linear__list_projects`
+   - If one project: use it automatically
+   - If multiple: ask user which project to use via AskUserQuestion
+   - If none: error — "No Linear projects found. Run `/create-plan` first to set up a project."
+
+### Step 2: Find Next Phase
+
+1. List issues for the selected project: `mcp__plugin_linear_linear__list_issues` filtered to "Todo" state
+2. Sort by title (phase numbering ensures correct order: "Phase 01" < "Phase 02")
+3. Take the first "Todo" issue — this is the next phase to execute
+4. If no "Todo" issues found:
+   - Check for "In Progress" issues — if found: "Phase [X] is already in progress. Check its status or wait for completion."
+   - If all "Done": "All phases complete! Project finished."
+   - Exit
+
+### Step 3: Read Agent Assignment
+
+1. Read the issue's labels to find the agent assignment
+2. The agent label indicates which subagent_type to use (e.g., "feature-dev:code-architect", "general-purpose")
+3. If no agent label found: default to "general-purpose"
+
+### Step 4: Map to Plan File
+
+1. Parse the issue title to extract phase number (e.g., "Phase 01: Foundation" → `01`)
+2. Find the corresponding plan directory: `.planning/phases/01-*/`
+3. Find the first unexecuted PLAN.md: look for `XX-YY-PLAN.md` without a matching `XX-YY-SUMMARY.md`
+4. If no plan file found: error — "No PLAN.md found for this phase. Run `/create-plan` to generate plans."
+
+### Step 5: Confirm with User
+
+Present to user:
+
+```
+Next phase: [issue title]
+Agent: [agent-name]
+Plan file: [path to PLAN.md]
+
+Dispatching to [agent-name] in background. Proceed? (Y/n)
+```
+
+Wait for confirmation.
+
+### Step 6: Update Linear State
+
+1. **First execution check:** If this is the first phase being started (no "Done" or "In Progress" issues exist):
+   - Update the Linear project state from "planned" to "started" via `mcp__plugin_linear_linear__update_project`
+
+2. Update the phase issue state to "In Progress" via `mcp__plugin_linear_linear__update_issue`
+
+### Step 7: Dispatch to Subagent
+
+Launch the subagent in background via Task tool:
+
+```
+Task tool:
+  subagent_type: [agent-label from Step 3]
+  run_in_background: true
+  prompt: |
+    Execute the plan at [plan-file-path].
+
+    **Context:**
+    - Read .planning/BRIEF.md for project context
+    - Read the PLAN.md file for full objective, tasks, and verification
+
+    **Instructions:**
+    - Execute ALL tasks in the plan sequentially
+    - Follow all deviation rules (auto-fix bugs, auto-add critical, ask on architectural)
+    - Create SUMMARY.md in the same directory as PLAN.md when complete
+    - Update .planning/ROADMAP.md progress
+    - Commit with format: feat({phase}-{plan}): [summary]
+    - Report: tasks completed, files modified, commit hash, any deviations
+```
+
+### Step 8: Return Control
+
+Inform user:
+
+```
+Dispatched: [phase title] → [agent-name] (background)
+
+When complete, the agent will:
+- Create SUMMARY.md
+- Commit changes
+- Linear issue will be updated to "Done"
+
+Your options:
+- /run-plan — dispatch next phase (after this one completes)
+- /whats-next — pause and create handoff
+- Continue with other work
+```
+
+### Step 9: On Subagent Completion
+
+When the background agent finishes (check via Task output):
+
+1. Update Linear issue state to "Done" via `mcp__plugin_linear_linear__update_issue`
+2. Add completion comment via `mcp__plugin_linear_linear__create_comment`:
+   ```
+   ✅ Phase executed successfully.
+
+   **Agent:** [agent-name]
+   **Summary:** [2-3 sentence summary from SUMMARY.md]
+   **Commit:** [commit hash]
+
+   ---
+   *Updated via /run-plan (auto-dispatch)*
+   ```
+
+{{/if}}
 
 **Critical Rules:**
 

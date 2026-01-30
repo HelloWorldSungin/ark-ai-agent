@@ -156,7 +156,11 @@ Hierarchical project planning optimized for solo developer + Claude. Create exec
 
 **Context management:** Auto-handoff at 10% tokens remaining. Git versioning commits outcomes, not process.
 
-**Commands:** `/create-plan` (invoke skill), `/run-plan <path>` (execute PLAN.md with intelligent segmentation)
+**Planning mode import:** `/create-plan @plan-file.md` imports a plan file (from Claude Code planning mode or any structured document) into the `.planning/` hierarchy, parsing agent assignments per phase, and syncing to Linear with project creation and agent labels.
+
+**Auto-dispatch:** `/run-plan` (no args) reads the next "Todo" phase from Linear, identifies the assigned agent from issue labels, and dispatches to that subagent in background. Linear state updates automatically (Todo → In Progress → Done).
+
+**Commands:** `/create-plan` (invoke skill or import plan file), `/run-plan` (auto-dispatch next phase or execute specific PLAN.md)
 
 See [create-plans README](./skills/create-plans/README.md) for full documentation.
 
@@ -246,7 +250,7 @@ See [setup-ralph README](./skills/setup-ralph/README.md) for full documentation.
 
 ## Recommended Workflow
 
-**For building projects:** Use `/create-plan` to invoke the [create-plans](#create-plans) skill. After planning, use `/run-plan <path-to-PLAN.md>` to execute phases with intelligent segmentation. This provides hierarchical planning (BRIEF.md → ROADMAP.md → phases/PLAN.md), domain-aware task generation, context management with handoffs, and git versioning.
+**For building projects:** Use Claude Code planning mode to design phases with agent assignments, then `/create-plan @plan-file.md` to import into the `.planning/` hierarchy and sync to Linear. Run `/run-plan` (no args) to auto-dispatch phases to assigned agents in background. Or use `/create-plan` interactively and `/run-plan <path>` for direct execution.
 
 **For domain expertise:** Use [create-agent-skills](#create-agent-skills) to create exhaustive knowledge bases in `~/.claude/skills/expertise/`. These skills are automatically loaded by create-plans to make task specifications framework-specific instead of generic.
 
