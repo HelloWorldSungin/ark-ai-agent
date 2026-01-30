@@ -1,7 +1,7 @@
 {
   "name": "ark-ai-agent",
   "description": "Curated Claude Code skills and commands for prompt engineering, MCP servers, subagents, hooks, playbook system, and productivity workflows",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": {
     "name": "SunginKim",
     "email": "sungin@arknode.com"
