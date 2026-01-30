@@ -222,7 +222,6 @@ Launch the subagent in background via Task tool:
 ```
 Task tool:
   subagent_type: [agent-label from Step 3]
-  run_in_background: true
   prompt: |
     Execute the plan at [plan-file-path].
 
@@ -236,43 +235,42 @@ Task tool:
     - Create SUMMARY.md in the same directory as PLAN.md when complete
     - Update .planning/ROADMAP.md progress
     - Commit with format: feat({phase}-{plan}): [summary]
-    - Report: tasks completed, files modified, commit hash, any deviations
+
+    **Linear completion (do this AFTER committing):**
+    - Linear issue ID: [issue-id from Step 2]
+    - Linear team: [resolved team from Step 1]
+    - Update the issue state to "Done" via mcp__plugin_linear_linear__update_issue
+    - Add a comment via mcp__plugin_linear_linear__create_comment:
+      "✅ Phase executed successfully.
+
+      **Agent:** [agent-name]
+      **Summary:** [2-3 sentence summary from SUMMARY.md]
+      **Commit:** [commit hash]
+
+      ---
+      *Updated via /run-plan (auto-dispatch)*"
+
+    - Report back: tasks completed, files modified, commit hash, any deviations
 ```
 
-### Step 8: Return Control
+**Note:** Subagent runs in foreground (fresh context, parent waits). The subagent handles its own Linear updates on completion, then reports results back to parent.
 
-Inform user:
+### Step 8: Report Results
+
+When the subagent returns, present the results to the user:
 
 ```
-Dispatched: [phase title] → [agent-name] (background)
-
-When complete, the agent will:
-- Create SUMMARY.md
-- Commit changes
-- Linear issue will be updated to "Done"
+Phase complete: [phase title]
+Agent: [agent-name]
+Result: [summary from subagent report]
+Commit: [hash]
+Linear: [issue-id] → Done
 
 Your options:
-- /run-plan — dispatch next phase (after this one completes)
+- /run-plan — dispatch next phase
 - /whats-next — pause and create handoff
 - Continue with other work
 ```
-
-### Step 9: On Subagent Completion
-
-When the background agent finishes (check via Task output):
-
-1. Update Linear issue state to "Done" via `mcp__plugin_linear_linear__update_issue`
-2. Add completion comment via `mcp__plugin_linear_linear__create_comment`:
-   ```
-   ✅ Phase executed successfully.
-
-   **Agent:** [agent-name]
-   **Summary:** [2-3 sentence summary from SUMMARY.md]
-   **Commit:** [commit hash]
-
-   ---
-   *Updated via /run-plan (auto-dispatch)*
-   ```
 
 {{/if}}
 
