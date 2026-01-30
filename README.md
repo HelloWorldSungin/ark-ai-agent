@@ -28,33 +28,32 @@ A growing collection of custom Claude Code resources built for real workflows. F
 
 ## Installation
 
-### Option 1: Plugin Install (Recommended)
+### Option 1: Git Submodule (Recommended)
+
+Add as a submodule in your project, then install globally:
 
 ```bash
-# Add the marketplace
-claude plugin marketplace add glittercowboy/taches-cc-resources
+# Add submodule
+git submodule add git@github.com:HelloWorldSungin/ark-ai-agent.git external/ark-ai-agent
 
-# Install the plugin
-claude plugin install taches-cc-resources
+# Install globally
+cp -r external/ark-ai-agent/commands/* ~/.claude/commands/
+cp -r external/ark-ai-agent/skills/* ~/.claude/skills/
+cp -r external/ark-ai-agent/agents/* ~/.claude/agents/
 ```
 
-Start a new Claude Code session to use the commands and skills.
-
-### Option 2: Manual Install
+### Option 2: Clone and Install
 
 ```bash
-# Clone the repo
-git clone https://github.com/glittercowboy/taches-cc-resources.git
-cd taches-cc-resources
+git clone git@github.com:HelloWorldSungin/ark-ai-agent.git
+cd ark-ai-agent
 
-# Install commands
 cp -r commands/* ~/.claude/commands/
-
-# Install skills
 cp -r skills/* ~/.claude/skills/
+cp -r agents/* ~/.claude/agents/
 ```
 
-Commands install globally to `~/.claude/commands/`. Skills install to `~/.claude/skills/`. Project-specific data (prompts, todos) lives in each project's working directory.
+Start a new Claude Code session to use the commands, skills, and agents. Project-specific data (prompts, todos, playbooks) lives in each project's working directory.
 
 ## Commands
 
