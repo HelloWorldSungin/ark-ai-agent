@@ -5,11 +5,32 @@ arguments:
   - name: plan_path
     description: Path to PLAN.md file (e.g., .planning/phases/07-sidebar-reorganization/07-01-PLAN.md)
     required: true
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
+  - Task
+  - mcp__plugin_linear_linear__list_issues
+  - mcp__plugin_linear_linear__list_teams
+  - mcp__plugin_linear_linear__update_issue
+  - mcp__plugin_linear_linear__create_comment
 ---
 
 Execute the plan at {{plan_path}} using **intelligent segmentation** for optimal quality.
 
 **Process:**
+
+0. **Linear Integration — Resolve issue for this plan (optional, non-blocking):**
+   - Resolve Linear team: check CLAUDE.md for `linear-team`, else `mcp__plugin_linear_linear__list_teams` → auto-select if one team
+   - Extract the plan's phase title from the `<objective>` section or filename (e.g., "Phase 03: Integration")
+   - Search Linear for a matching issue: `mcp__plugin_linear_linear__list_issues` with `query` matching the phase title and the resolved team
+   - If a matching issue is found:
+     - Update its state to "In Progress" via `mcp__plugin_linear_linear__update_issue`
+     - Store the issue ID for use in step 4
+   - If no matching issue found: skip Linear updates silently (no error, no user prompt)
 
 1. **Verify plan exists and is unexecuted:**
    - Read {{plan_path}}
@@ -111,6 +132,19 @@ Execute the plan at {{plan_path}} using **intelligent segmentation** for optimal
 4. **Summary and completion:**
    - Verify SUMMARY.md created
    - Verify commit successful
+   - **Linear Integration** — If a Linear issue was found in step 0:
+     - Update state to "Done" via `mcp__plugin_linear_linear__update_issue`
+     - Add a comment with `mcp__plugin_linear_linear__create_comment`:
+       ```
+       ✅ Plan executed successfully.
+
+       **Summary:** [2-3 sentence summary from SUMMARY.md]
+
+       **Commit:** [commit hash]
+
+       ---
+       *Updated via /run-plan*
+       ```
    - Present completion message with next steps
 
 **Critical Rules:**

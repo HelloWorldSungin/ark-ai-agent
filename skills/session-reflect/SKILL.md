@@ -1,6 +1,15 @@
 ---
 name: session-reflect
 description: Analyzes completed session to extract reusable knowledge for the playbook system. Identifies strategies that helped, mistakes to avoid, reusable code patterns, and key decisions. Outputs structured JSON for the playbook-curator sub-agent to process.
+allowed-tools:
+  - Read
+  - Bash
+  - Glob
+  - Grep
+  - mcp__plugin_linear_linear__create_issue
+  - mcp__plugin_linear_linear__create_issue_label
+  - mcp__plugin_linear_linear__list_teams
+  - mcp__plugin_linear_linear__list_issue_labels
 ---
 
 <objective>
@@ -151,6 +160,37 @@ Iterative refinement: If the initial extraction seems incomplete or low-quality,
 <action>Ask user if they want to proceed with /playbook-update</action>
 </actions>
 </step_7>
+
+<step_8>
+<title>Offer to Create Linear Issues for Discovered Work</title>
+<description>If the reflection identified actionable improvements, bugs, or tech debt that require code changes, offer to create Linear issues.</description>
+<actions>
+<action>Review the new_bullets output — filter for items that represent actionable code work (not just knowledge). Look for pitfalls that need fixing, strategies that imply missing features, or decisions that require implementation.</action>
+<action>If actionable items exist (at least 1), present them and ask: "Create Linear issues for [N] discovered items? (y/n)"</action>
+<action>If user declines or no actionable items: skip to completion</action>
+<action>If user accepts:
+  1. Resolve Linear team (same pattern as /add-to-todos): check CLAUDE.md → list_teams → auto-select or ask
+  2. Ensure "discovered" label exists: check via list_issue_labels, create with create_issue_label if missing (name: "discovered", color: "#FF6B35")
+  3. For each actionable item, create a Linear issue via create_issue:
+     - **title**: Action verb + component (3-8 words)
+     - **team**: Resolved team
+     - **state**: "Backlog"
+     - **labels**: ["discovered"]
+     - **description**: Markdown formatted:
+       ```
+       **Discovery:** [What was found]
+
+       **Context:** [From which playbook category — strategy/pitfall/pattern/decision]
+
+       **Rationale:** [Why this needs action]
+
+       ---
+       *Discovered during /session-reflect (Session [N])*
+       ```
+  4. Report created issues: "Created [N] Linear issues: [LINEAR_ID_1], [LINEAR_ID_2], ..."
+</action>
+</actions>
+</step_8>
 </process>
 
 <playbook_format>
