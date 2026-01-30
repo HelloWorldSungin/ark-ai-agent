@@ -203,28 +203,14 @@ Automatically find the next phase to execute from Linear, read its agent assignm
 3. Find the first unexecuted PLAN.md: look for `XX-YY-PLAN.md` without a matching `XX-YY-SUMMARY.md`
 4. If no plan file found: error — "No PLAN.md found for this phase. Run `/create-plan` to generate plans."
 
-### Step 5: Confirm with User
-
-Present to user:
-
-```
-Next phase: [issue title]
-Agent: [agent-name]
-Plan file: [path to PLAN.md]
-
-Dispatching to [agent-name] in background. Proceed? (Y/n)
-```
-
-Wait for confirmation.
-
-### Step 6: Update Linear State
+### Step 5: Update Linear State
 
 1. **First execution check:** If this is the first phase being started (no "Done" or "In Progress" issues exist):
    - Update the Linear project state from "planned" to "started" via `mcp__plugin_linear_linear__update_project`
 
 2. Update the phase issue state to "In Progress" via `mcp__plugin_linear_linear__update_issue`
 
-### Step 7: Dispatch to Subagent
+### Step 6: Dispatch to Subagent
 
 Launch the subagent in background via Task tool:
 
@@ -264,22 +250,37 @@ Task tool:
 
 **Note:** Subagent runs in foreground (fresh context, parent waits). The subagent handles its own Linear updates on completion, then reports results back to parent.
 
-### Step 8: Report Results
+### Step 7: Report Results and Auto-Continue
 
-When the subagent returns, present the results to the user:
+When the subagent returns, log the phase result:
 
 ```
-Phase complete: [phase title]
-Agent: [agent-name]
-Result: [summary from subagent report]
-Commit: [hash]
-Linear: [issue-id] → Done
-
-Your options:
-- /run-plan — dispatch next phase
-- /whats-next — pause and create handoff
-- Continue with other work
+✅ Phase complete: [phase title]
+   Agent: [agent-name]
+   Result: [summary from subagent report]
+   Commit: [hash]
+   Linear: [issue-id] → Done
 ```
+
+Then apply the **context window guard**:
+
+1. **Assess context usage.** After each phase completes, estimate how much of your context window you have consumed so far. Consider the total volume of text exchanged (prompts, tool results, responses) relative to your full context capacity.
+
+2. **If context usage exceeds 45%**, stop the loop and tell the user:
+   ```
+   ⚠️ Context window is at ~[X]%. To maintain quality, stopping here.
+
+   Run /whats-next to create a handoff, then start a fresh session and run /run-plan to continue.
+   ```
+
+3. **If context usage is below 45%**, loop back to **Step 2** — find the next "Todo" phase and dispatch it automatically. Do NOT ask for confirmation; proceed immediately.
+
+4. **If no more "Todo" phases remain**, report project completion:
+   ```
+   🎉 All phases complete! Project finished.
+
+   Run /whats-next to create a final handoff document.
+   ```
 
 {{/if}}
 
