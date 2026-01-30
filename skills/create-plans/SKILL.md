@@ -337,7 +337,8 @@ What would you like to do?
 2. Execute current phase
 3. Create handoff (stopping for now)
 4. View/update roadmap
-5. Something else
+5. Sync phases to Linear
+6. Something else
 ```
 
 **If no planning structure:**
@@ -367,6 +368,7 @@ What would you like to do?
 | "resume", "continue", 1 (has handoff) | `workflows/resume.md` |
 | "transition", "complete", "done", "next" | `workflows/transition.md` |
 | "milestone", "ship", "v1.0", "release" | `workflows/complete-milestone.md` |
+| "sync linear", "linear", "create issues" | `workflows/sync-to-linear.md` |
 | "guidance", "help", 4 | `workflows/get-guidance.md` |
 
 **Critical:** Plan execution should NOT invoke this skill. Use `/run-plan` for context efficiency (skill loads ~20k tokens, /run-plan loads ~5-7k).
@@ -471,6 +473,7 @@ All in `workflows/`:
 | handoff.md | Create context handoff for pausing |
 | resume.md | Load handoff, restore context |
 | get-guidance.md | Help decide planning approach |
+| sync-to-linear.md | Create Linear issues from ROADMAP.md phases |
 </workflows_index>
 
 <success_criteria>
