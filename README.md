@@ -158,7 +158,9 @@ Hierarchical project planning optimized for solo developer + Claude. Create exec
 
 **Planning mode import:** `/create-plan @plan-file.md` imports a plan file (from Claude Code planning mode or any structured document) into the `.planning/` hierarchy, parsing agent assignments per phase, and syncing to Linear with project creation and agent labels.
 
-**Auto-dispatch:** `/run-plan` (no args) reads the next "Todo" phase from Linear, identifies the assigned agent from issue labels, and dispatches to that subagent in background. Linear state updates automatically (Todo → In Progress → Done).
+**Auto-dispatch:** `/run-plan` (no args) finds plan issues by `plan` label, resolves the unique plan-name label, then queries phases by `phase` + plan-name labels in "Todo" state. Identifies the assigned agent from issue labels and dispatches to that subagent. Linear state updates automatically (Todo → In Progress → Done).
+
+**Structured labels:** `/create-plan` applies three label categories: `plan` (project issues), `phase` (phase issues), and a unique plan-name label (all issues under the plan). This enables precise filtering — `/run-plan` queries by label instead of listing entire projects.
 
 **Commands:** `/create-plan` (invoke skill or import plan file), `/run-plan` (auto-dispatch next phase or execute specific PLAN.md)
 

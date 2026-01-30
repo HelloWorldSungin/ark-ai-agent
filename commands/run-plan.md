@@ -15,6 +15,7 @@ allowed-tools:
   - Task
   - AskUserQuestion
   - mcp__plugin_linear_linear__list_issues
+  - mcp__plugin_linear_linear__list_issue_labels
   - mcp__plugin_linear_linear__list_teams
   - mcp__plugin_linear_linear__list_projects
   - mcp__plugin_linear_linear__update_issue
@@ -163,21 +164,25 @@ Automatically find the next phase to execute from Linear, read its agent assignm
 
 **Process:**
 
-### Step 1: Resolve Linear Team and Project
+### Step 1: Resolve Linear Team and Find Plan
 
 1. Resolve Linear team: check CLAUDE.md for `linear-team`, else `mcp__plugin_linear_linear__list_teams` → auto-select if one team
-2. List projects via `mcp__plugin_linear_linear__list_projects`
-   - If one project: use it automatically
-   - If multiple: ask user which project to use via AskUserQuestion
-   - If none: error — "No Linear projects found. Run `/create-plan` first to set up a project."
+2. Find plan issues via `mcp__plugin_linear_linear__list_issues` filtered by label `plan`
+   - This returns only project-level issues created by `/create-plan`
+   - If one plan issue: use it automatically
+   - If multiple: ask user which plan to execute via AskUserQuestion
+   - If none: error — "No plan issues found in Linear. Run `/create-plan` first."
+3. Read the selected plan issue's labels to find the **plan-name label** (the label that is NOT `plan` — it's the unique plan-name)
+4. Store the plan-name label for filtering in Step 2
 
 ### Step 2: Find Next Phase
 
-1. List issues for the selected project: `mcp__plugin_linear_linear__list_issues` filtered to "Todo" state
-2. Sort by title (phase numbering ensures correct order: "Phase 01" < "Phase 02")
-3. Take the first "Todo" issue — this is the next phase to execute
-4. If no "Todo" issues found:
-   - Check for "In Progress" issues — if found: "Phase [X] is already in progress. Check its status or wait for completion."
+1. List issues filtered by the plan-name label and "Todo" state: `mcp__plugin_linear_linear__list_issues` with label `<plan-name>` and state "Todo"
+2. Filter to phase issues only (issues that also have the `phase` label)
+3. Sort by title (phase numbering ensures correct order: "Phase 01" < "Phase 02")
+4. Take the first "Todo" phase issue — this is the next phase to execute
+5. If no "Todo" phase issues found:
+   - Check for "In Progress" phase issues (filter by `phase` + plan-name labels, "In Progress" state) — if found: "Phase [X] is already in progress. Check its status or wait for completion."
    - If all "Done": "All phases complete! Project finished."
    - Exit
 
@@ -185,7 +190,11 @@ Automatically find the next phase to execute from Linear, read its agent assignm
 
 1. Read the issue's labels to find the agent assignment
 2. The agent label indicates which subagent_type to use (e.g., "feature-dev:code-architect", "general-purpose")
-3. If no agent label found: default to "general-purpose"
+3. **Fallback — parse from description:** If no agent label found, search the issue description for:
+   - `**Sub-agent:** \`agent-name\`` or `**Agent:** \`agent-name\``
+   - `**Sub-agents:** \`agent1\`, \`agent2\`` (use the first one)
+   - Extract the agent name from the backtick-wrapped value
+4. If still no agent found: default to "general-purpose"
 
 ### Step 4: Map to Plan File
 
