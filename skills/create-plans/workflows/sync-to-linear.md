@@ -70,6 +70,7 @@ Also extract agent assignments from the Phases summary line format: `agent:[name
 | Label | Color | Purpose |
 |-------|-------|---------|
 | `plan` | red | Identifies plan-created project issues (reused across plans) |
+| `project-plan` | red | Identifies the top-level project issue (reused across plans) |
 | `phase` | indigo | Identifies phase issues (reused across plans) |
 | `<plan-name>` | cyan | Unique label matching project name — enables filtering all related issues |
 | Agent labels | varies (see below) | One per unique agent name from ROADMAP.md |
@@ -94,7 +95,7 @@ If a new project was created in Step 2, find or create an issue to represent the
    - **team**: Resolved team from Step 0
    - **state**: "Backlog"
    - **project**: Project ID from Step 2
-   - **labels**: `["<plan-label-id>", "<plan-name-label-id>"]` — the `plan` label + the unique plan-name label from Step 3
+   - **labels**: `["<plan-label-id>", "<project-plan-label-id>", "<plan-name-label-id>"]` — the `plan` label + `project-plan` label + the unique plan-name label from Step 3
    - **description**: Problem statement and success criteria from BRIEF.md
 2. Store the project issue ID
 
