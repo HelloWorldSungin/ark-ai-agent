@@ -146,7 +146,18 @@ For each phase, create:
 - `.planning/phases/XX-name/` directory
 - `.planning/phases/XX-name/XX-01-PLAN.md` with tasks from that phase
 
-Each PLAN.md follows the standard plan format with `<objective>`, `<tasks>`, `<verification>`, `<success_criteria>` sections.
+Each PLAN.md follows the standard plan format. Populate each XML field by carrying over detail from the source plan:
+
+- **`<objective>`**: Transfer the phase's full goal, purpose, and expected output — not just a one-liner summary. Include why this phase matters and what it enables.
+- **`<action>`**: This is the critical field. Transfer ALL implementation details from the source plan — specific approaches, libraries/tools to use, patterns to follow, things to avoid and why, code structure, edge cases, error handling notes, and rationale. If the source says "use library X because Y has CommonJS issues", that exact detail goes here.
+- **`<files>`**: Include every specific file path mentioned in the source plan for this task.
+- **`<verify>`**: Convert verification steps into concrete, executable commands (test commands, curl checks, grep assertions).
+- **`<done>`**: Make acceptance criteria measurable and specific — not "works correctly" but "returns 200 with JSON payload containing X field".
+- **`<context>`**: Add `@path` references for source files, configs, and modules mentioned in the source plan so the executing agent has immediate access.
+
+**Detail Preservation Rule:** Every implementation detail, rationale, gotcha, and specific approach from the source plan MUST appear in the generated PLAN.md. Nothing is summarized away. When in doubt, include the detail — a verbose `<action>` tag is far better than a terse one that forces the executing agent to guess.
+
+**Context References Rule:** Scan the source plan for mentioned file paths, modules, and components. Add them as `@path` references in the `<context>` section of each task. This gives the executing agent immediate access to the files it needs without re-discovering them.
 
 ### Step 4: Confirm and Sync to Linear
 
