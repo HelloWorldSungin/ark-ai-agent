@@ -1,26 +1,16 @@
-# TÂCHES Claude Code Resources
+# ark-ai-agent
 
-A growing collection of custom Claude Code resources built for real workflows.
-
-## Philosophy
-
-When you use a tool like Claude Code, it's your responsibility to assume everything is possible.
-
-I built these tools using that mindset.
-
-Dream big. Happy building.
-
-— TÂCHES
+A growing collection of custom Claude Code resources built for real workflows. Forked from [TÂCHES](https://github.com/glittercowboy/taches-cc-resources) with added playbook system (ACE pattern) for cross-session knowledge accumulation.
 
 ## What's Inside
 
-**[Commands](#commands)** (27 total) - Slash commands that expand into structured workflows
+**[Commands](#commands)** (29 total) - Slash commands that expand into structured workflows
 - **Meta-Prompting**: Separate planning from execution with staged prompts
 - **Todo Management**: Capture context mid-work, resume later with full state
 - **Thinking Models**: Mental frameworks (first principles, inversion, 80/20, etc.)
 - **Deep Analysis**: Systematic debugging methodology with evidence and hypothesis testing
 
-**[Skills](#skills)** (9 total) - Autonomous workflows that research, generate, and self-heal
+**[Skills](#skills)** (11 total) - Autonomous workflows that research, generate, and self-heal
 - **Create Plans**: Hierarchical project planning for solo developer + Claude workflows
 - **Create MCP Servers**: Build MCP servers for Claude integrations (Python/TypeScript)
 - **Create Agent Skills**: Build new skills by describing what you want
@@ -31,7 +21,7 @@ Dream big. Happy building.
 - **Debug Like Expert**: Systematic debugging with evidence gathering and hypothesis testing
 - **Setup Ralph**: Set up Geoffrey Huntley's Ralph Wiggum autonomous coding loop
 
-**[Agents](#agents)** (3 total) - Specialized subagents for validation and quality
+**[Agents](#agents)** (4 total) - Specialized subagents for validation and quality
 - **skill-auditor**: Reviews skills for best practices compliance
 - **slash-command-auditor**: Reviews commands for proper structure
 - **subagent-auditor**: Reviews agent configurations for effectiveness
@@ -106,6 +96,13 @@ Invoke auditor subagents.
 - [`/audit-slash-command`](./commands/audit-slash-command.md) - Audit command for best practices
 - [`/audit-subagent`](./commands/audit-subagent.md) - Audit subagent for best practices
 
+### Playbook (ACE Pattern)
+
+Accumulate reusable knowledge across sessions. Strategies, pitfalls, code patterns, and decisions are stored as bullets with helpful/harmful counters.
+
+- [`/session-reflect`](./commands/session-reflect.md) - Analyze session and extract learnings
+- [`/playbook-update`](./commands/playbook-update.md) - Apply reflection to playbook files
+
 ### Self-Improvement
 
 - [`/heal-skill`](./commands/heal-skill.md) - Fix skills based on execution issues
@@ -140,6 +137,7 @@ Specialized subagents used by the audit commands.
 - [`skill-auditor`](./agents/skill-auditor.md) - Expert skill auditor for best practices compliance
 - [`slash-command-auditor`](./agents/slash-command-auditor.md) - Expert slash command auditor
 - [`subagent-auditor`](./agents/subagent-auditor.md) - Expert subagent configuration auditor
+- [`playbook-curator`](./agents/playbook-curator.md) - ACE-style playbook curator for knowledge accumulation
 
 ## Skills
 
@@ -215,6 +213,20 @@ Deep analysis debugging mode for complex issues. Activates methodical investigat
 
 Commands: `/debug`
 
+### [Session Reflect](./skills/session-reflect/)
+
+End-of-session analysis that extracts reusable knowledge using the ACE (Agentic Context Engineering) pattern. Reviews completed work, identifies helpful/harmful playbook bullets, and extracts new strategies, pitfalls, code patterns, and decisions.
+
+Commands: `/session-reflect`
+
+### [Playbook Update](./skills/playbook-update/)
+
+Applies playbook updates from session reflection via the playbook-curator sub-agent. Increments helpful/harmful counters, adds new bullets with unique IDs, performs semantic deduplication, and commits changes.
+
+Commands: `/playbook-update`
+
+See [playbook system docs](./docs/playbook-system.md) for full documentation.
+
 ### [Setup Ralph](./skills/setup-ralph/)
 
 Set up Geoffrey Huntley's Ralph Wiggum autonomous coding loop. Ralph is an autonomous AI coding methodology that uses iterative loops with task selection, execution, and validation. Fresh context every iteration prevents context poisoning.
@@ -239,10 +251,9 @@ See [setup-ralph README](./skills/setup-ralph/README.md) for full documentation.
 
 ---
 
-More resources coming soon.
+**For knowledge accumulation:** Use `/session-reflect` at the end of each session, then `/playbook-update` to persist learnings. See [playbook system docs](./docs/playbook-system.md).
 
 ---
 
+**Based on:** [TÂCHES CC Resources](https://github.com/glittercowboy/taches-cc-resources) by Lex Christopherson
 **Community Ports:** [OpenCode](https://github.com/stephenschoettler/taches-oc-prompts)
-
-—TÂCHES

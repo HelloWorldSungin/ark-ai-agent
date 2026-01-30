@@ -1,13 +1,13 @@
 {
-  "name": "taches-cc-resources",
-  "description": "Curated Claude Code skills and commands for prompt engineering, MCP servers, subagents, hooks, and productivity workflows",
-  "version": "1.0.0",
+  "name": "ark-ai-agent",
+  "description": "Curated Claude Code skills and commands for prompt engineering, MCP servers, subagents, hooks, playbook system, and productivity workflows",
+  "version": "2.0.0",
   "author": {
-    "name": "Lex Christopherson",
-    "email": "lex@glittercowboy.com"
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
   },
-  "homepage": "https://github.com/glittercowboy/taches-cc-resources",
-  "repository": "https://github.com/glittercowboy/taches-cc-resources",
+  "homepage": "https://github.com/HelloWorldSungin/ark-ai-agent",
+  "repository": "git@github.com:HelloWorldSungin/ark-ai-agent.git",
   "license": "MIT",
   "keywords": [
     "skills",
@@ -17,6 +17,9 @@
     "hooks",
     "slash-commands",
     "prompt-engineering",
-    "meta-prompting"
+    "meta-prompting",
+    "playbook",
+    "ace-pattern",
+    "session-reflect"
   ]
 }
