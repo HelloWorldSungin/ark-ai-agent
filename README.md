@@ -28,21 +28,25 @@ A growing collection of custom Claude Code resources built for real workflows. F
 
 ## Installation
 
-### Option 1: Git Submodule (Recommended)
+### Option 1: Plugin Install (Recommended)
 
-Add as a submodule in your project, then install globally:
+From within Claude Code:
 
-```bash
-# Add submodule
-git submodule add git@github.com:HelloWorldSungin/ark-ai-agent.git external/ark-ai-agent
-
-# Install globally
-cp -r external/ark-ai-agent/commands/* ~/.claude/commands/
-cp -r external/ark-ai-agent/skills/* ~/.claude/skills/
-cp -r external/ark-ai-agent/agents/* ~/.claude/agents/
+```
+/plugin marketplace add HelloWorldSungin/ark-ai-agent
+/plugin install ark-ai-agent@ark-ai-agent
 ```
 
-### Option 2: Clone and Install
+Or if you have it as a local submodule:
+
+```
+/plugin marketplace add ./external/ark-ai-agent
+/plugin install ark-ai-agent@ark-ai-agent
+```
+
+You can also use the interactive `/plugin` UI to browse and install.
+
+### Option 2: Manual Install
 
 ```bash
 git clone git@github.com:HelloWorldSungin/ark-ai-agent.git
