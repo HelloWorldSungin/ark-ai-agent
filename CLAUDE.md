@@ -22,7 +22,7 @@ ark-ai-agent is a Claude Code plugin providing skills, slash commands, subagents
 
 **Skills** (`skills/*/SKILL.md`) — Autonomous workflows using the router pattern: SKILL.md (intake + routing, <500 lines) → `workflows/` (procedures) → `references/` (domain knowledge) → `templates/` (output structures). Progressive disclosure keeps context efficient.
 
-**Subagents** (`agents/*.md`) — Specialized validation/curation agents: skill-auditor, slash-command-auditor, subagent-auditor, playbook-curator.
+**Subagents** (`agents/*.md`) — Specialized validation/curation agents: skill-auditor, slash-command-auditor, subagent-auditor, playbook-curator. **Team agents** (`agents/team/*.md`) — builder (focused execution) and validator (read-only verification) for team-orchestrated plans.
 
 **Domain Expertise** (`skills/expertise/`) — Large knowledge bases (5k-10k+ lines) loaded by create-plans for framework-specific context (macOS, iOS, n8n).
 
@@ -34,7 +34,9 @@ ark-ai-agent is a Claude Code plugin providing skills, slash commands, subagents
 
 **Meta-Prompting** — Separates analysis (main context generates rigorous prompt) from execution (fresh sub-agent runs generated prompt). Ensures context quality.
 
-**Planning** — `/create-plan` produces PLAN.md files that ARE the prompt (not docs). `/run-plan` executes them. Scope rule: 2-3 tasks per plan, 50% context max (Claude degrades at ~40-50% context).
+**Planning** — `/create-plan` produces PLAN.md files that ARE the prompt (not docs). `/run-plan` executes them solo. Scope rule: 2-3 tasks per plan, 50% context max (Claude degrades at ~40-50% context).
+
+**Team Orchestration** — `/plan-w-team` generates plans with Team Members and Step by Step Tasks sections (task IDs, dependencies, parallel flags, agent assignments). `/build` executes them by creating TaskCreate entries, dispatching builder agents via Task tool, and running validators. Builder/Validator separation ensures independent verification. `/run-plan` remains for solo execution (backward compatible).
 
 **Linear Integration** (v2.1.0) — `/add-to-todos`, `/check-todos`, `/create-plan`, `/whats-next`, `/run-plan` integrate with Linear. Team resolution checks CLAUDE.md for `linear-team`, then MCP.
 
