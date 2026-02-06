@@ -38,7 +38,7 @@ ark-ai-agent is a Claude Code plugin providing skills, slash commands, subagents
 
 **Team Orchestration** — `/plan-w-team` generates plans with Team Members and Step by Step Tasks sections (task IDs, dependencies, parallel flags, agent assignments). `/build` executes them by creating TaskCreate entries, dispatching builder agents via Task tool, and running validators. Builder/Validator separation ensures independent verification. `/run-plan` remains for solo execution (backward compatible).
 
-**Linear Integration** (v2.1.0) — `/add-to-todos`, `/check-todos`, `/create-plan`, `/whats-next`, `/run-plan` integrate with Linear. Team resolution checks CLAUDE.md for `linear-team`, then MCP.
+**Linear Integration** (v2.1.0) — `/add-to-todos`, `/check-todos`, `/create-plan`, `/whats-next`, `/run-plan` integrate with Linear. Team resolution checks CLAUDE.md for `linear-team`, then mcporter CLI.
 
 ### YAML Frontmatter Format
 

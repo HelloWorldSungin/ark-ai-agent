@@ -7,10 +7,6 @@ allowed-tools:
   - Bash
   - WebSearch
   - WebFetch
-  - mcp__plugin_linear_linear__create_issue
-  - mcp__plugin_linear_linear__create_issue_label
-  - mcp__plugin_linear_linear__list_teams
-  - mcp__plugin_linear_linear__list_issue_labels
 ---
 
 Create a comprehensive, detailed handoff document that captures all context from the current conversation. This allows continuing the work in a fresh context with complete precision.
@@ -64,15 +60,15 @@ After writing `whats-next.md`, if there is remaining work (i.e., `<work_remainin
 
 1. **Resolve Linear team** (same pattern as /add-to-todos):
    - Check if the project's CLAUDE.md specifies a `linear-team` value
-   - If not, use `mcp__plugin_linear_linear__list_teams` to list available teams
+   - If not, use `mcporter call linear.list_teams --output json` to list available teams
    - If only one team exists, use it automatically
    - If multiple teams, ask user which team to use
 
 2. **Ensure "handoff" label exists:**
-   - Use `mcp__plugin_linear_linear__list_issue_labels` with the resolved team to check for a label named "handoff"
-   - If it doesn't exist, create it with `mcp__plugin_linear_linear__create_issue_label` (name: "handoff", color: "#7B68EE")
+   - Use `mcporter call linear.list_issue_labels team:TEAM --output json` with the resolved team to check for a label named "handoff"
+   - If it doesn't exist, create it with `mcporter call 'linear.create_issue_label(...)' --output json` (name: "handoff", color: "#7B68EE")
 
-3. **Create Linear issue** via `mcp__plugin_linear_linear__create_issue`:
+3. **Create Linear issue** via `mcporter call 'linear.create_issue(...)' --output json`:
    - **title**: "Resume: [1-sentence summary of original task]"
    - **team**: Resolved team
    - **state**: "Todo"

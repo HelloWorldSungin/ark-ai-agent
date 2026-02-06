@@ -6,10 +6,6 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
-  - mcp__plugin_linear_linear__create_issue
-  - mcp__plugin_linear_linear__create_issue_label
-  - mcp__plugin_linear_linear__list_teams
-  - mcp__plugin_linear_linear__list_issue_labels
 ---
 
 <objective>
@@ -169,9 +165,9 @@ Iterative refinement: If the initial extraction seems incomplete or low-quality,
 <action>If actionable items exist (at least 1), present them and ask: "Create Linear issues for [N] discovered items? (y/n)"</action>
 <action>If user declines or no actionable items: skip to completion</action>
 <action>If user accepts:
-  1. Resolve Linear team (same pattern as /add-to-todos): check CLAUDE.md → list_teams → auto-select or ask
-  2. Ensure "discovered" label exists: check via list_issue_labels, create with create_issue_label if missing (name: "discovered", color: "#FF6B35")
-  3. For each actionable item, create a Linear issue via create_issue:
+  1. Resolve Linear team (same pattern as /add-to-todos): check CLAUDE.md → `mcporter call linear.list_teams --output json` → auto-select or ask
+  2. Ensure "discovered" label exists: check via `mcporter call linear.list_issue_labels team:TEAM --output json`, create with `mcporter call 'linear.create_issue_label(...)' --output json` if missing (name: "discovered", color: "#FF6B35")
+  3. For each actionable item, create a Linear issue via `mcporter call 'linear.create_issue(...)' --output json`:
      - **title**: Action verb + component (3-8 words)
      - **team**: Resolved team
      - **state**: "Backlog"

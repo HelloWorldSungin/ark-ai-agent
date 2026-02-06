@@ -3,11 +3,8 @@ description: List outstanding todos from Linear and select one to work on
 allowed-tools:
   - Read
   - Edit
+  - Bash
   - Glob
-  - mcp__plugin_linear_linear__list_issues
-  - mcp__plugin_linear_linear__get_issue
-  - mcp__plugin_linear_linear__update_issue
-  - mcp__plugin_linear_linear__list_teams
 ---
 
 # Check Todos
@@ -16,12 +13,12 @@ allowed-tools:
 
 1. Resolve Linear team:
    - Check if the project's CLAUDE.md specifies a `linear-team` value
-   - If not, use `mcp__plugin_linear_linear__list_teams` to list available teams
+   - If not, use `mcporter call linear.list_teams --output json` to list available teams
    - If only one team exists, use it automatically
    - If multiple teams, ask user which team to use
 
 2. Fetch todos from Linear:
-   - Use `mcp__plugin_linear_linear__list_issues` with label "todo", state "Todo", using the resolved team
+   - Use `mcporter call linear.list_issues --output json` with label "todo", state "Todo", using the resolved team
    - If Linear returns results, use those as the primary source
    - If Linear is unavailable or returns an error, fall back to reading TO-DOS.md in the working directory
    - If neither source has items, say "No outstanding todos" and exit
@@ -36,7 +33,7 @@ allowed-tools:
    - Wait for user to reply with a number
 
 4. Load full context for selected todo:
-   - Fetch full issue details via `mcp__plugin_linear_linear__get_issue`
+   - Fetch full issue details via `mcporter call linear.get_issue id:ID --output json`
    - Display complete description (Problem, Files, Solution)
    - Read and briefly summarize relevant files mentioned
 
@@ -53,14 +50,14 @@ allowed-tools:
 
 7. Handle user choice:
    - **Option "Invoke skill" or "Start working"**:
-     - Update Linear issue to "In Progress" via `mcp__plugin_linear_linear__update_issue`
+     - Update Linear issue to "In Progress" via `mcporter call 'linear.update_issue(...)' --output json`
      - Remove todo from TO-DOS.md if it exists there (and h2 heading if section becomes empty)
      - Begin work (invoke skill if applicable, or proceed directly)
    - **Option "Brainstorm approach"**: Keep as "Todo", invoke `/brainstorm` with the todo description as argument
    - **Option "Put it back"**: Keep as "Todo", return to step 2 to display the full list again
 
 8. When work is completed:
-   - Update Linear issue to "Done" via `mcp__plugin_linear_linear__update_issue`
+   - Update Linear issue to "Done" via `mcporter call 'linear.update_issue(...)' --output json`
 
 ## Display Format
 

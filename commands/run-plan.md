@@ -14,14 +14,6 @@ allowed-tools:
   - Grep
   - Task
   - AskUserQuestion
-  - mcp__plugin_linear_linear__list_issues
-  - mcp__plugin_linear_linear__list_issue_labels
-  - mcp__plugin_linear_linear__list_teams
-  - mcp__plugin_linear_linear__list_projects
-  - mcp__plugin_linear_linear__update_issue
-  - mcp__plugin_linear_linear__update_project
-  - mcp__plugin_linear_linear__create_comment
-  - mcp__plugin_linear_linear__get_issue
 ---
 
 {{#if plan_path}}
@@ -33,11 +25,11 @@ Execute the plan at {{plan_path}} using **intelligent segmentation** for optimal
 **Process:**
 
 0. **Linear Integration — Resolve issue for this plan (optional, non-blocking):**
-   - Resolve Linear team: check CLAUDE.md for `linear-team`, else `mcp__plugin_linear_linear__list_teams` → auto-select if one team
+   - Resolve Linear team: check CLAUDE.md for `linear-team`, else `mcporter call linear.list_teams --output json` → auto-select if one team
    - Extract the plan's phase title from the `<objective>` section or filename (e.g., "Phase 03: Integration")
-   - Search Linear for a matching issue: `mcp__plugin_linear_linear__list_issues` with `query` matching the phase title and the resolved team
+   - Search Linear for a matching issue: `mcporter call linear.list_issues --output json` with `query` matching the phase title and the resolved team
    - If a matching issue is found:
-     - Update its state to "In Progress" via `mcp__plugin_linear_linear__update_issue`
+     - Update its state to "In Progress" via `mcporter call 'linear.update_issue(...)' --output json`
      - Store the issue ID for use in step 4
    - If no matching issue found: skip Linear updates silently (no error, no user prompt)
 
@@ -142,8 +134,8 @@ Execute the plan at {{plan_path}} using **intelligent segmentation** for optimal
    - Verify SUMMARY.md created
    - Verify commit successful
    - **Linear Integration** — If a Linear issue was found in step 0:
-     - Update state to "Done" via `mcp__plugin_linear_linear__update_issue`
-     - Add a comment with `mcp__plugin_linear_linear__create_comment`:
+     - Update state to "Done" via `mcporter call 'linear.update_issue(...)' --output json`
+     - Add a comment with `mcporter call 'linear.create_comment(...)' --output json`:
        ```
        ✅ Plan executed successfully.
 
@@ -166,8 +158,8 @@ Automatically find the next phase to execute from Linear, read its agent assignm
 
 ### Step 1: Resolve Linear Team and Find Plan
 
-1. Resolve Linear team: check CLAUDE.md for `linear-team`, else `mcp__plugin_linear_linear__list_teams` → auto-select if one team
-2. Find plan issues via `mcp__plugin_linear_linear__list_issues` filtered by label `plan`
+1. Resolve Linear team: check CLAUDE.md for `linear-team`, else `mcporter call linear.list_teams --output json` → auto-select if one team
+2. Find plan issues via `mcporter call linear.list_issues --output json` filtered by label `plan`
    - This returns only project-level issues created by `/create-plan`
    - If one plan issue: use it automatically
    - If multiple: ask user which plan to execute via AskUserQuestion
@@ -177,7 +169,7 @@ Automatically find the next phase to execute from Linear, read its agent assignm
 
 ### Step 2: Find Next Phase
 
-1. List issues filtered by the plan-name label and "Todo" state: `mcp__plugin_linear_linear__list_issues` with label `<plan-name>` and state "Todo"
+1. List issues filtered by the plan-name label and "Todo" state: `mcporter call linear.list_issues --output json` with label `<plan-name>` and state "Todo"
 2. Filter to phase issues only (issues that also have the `phase` label)
 3. Sort by title (phase numbering ensures correct order: "Phase 01" < "Phase 02")
 4. Take the first "Todo" phase issue — this is the next phase to execute
@@ -206,9 +198,9 @@ Automatically find the next phase to execute from Linear, read its agent assignm
 ### Step 5: Update Linear State
 
 1. **First execution check:** If this is the first phase being started (no "Done" or "In Progress" issues exist):
-   - Update the Linear project state from "planned" to "started" via `mcp__plugin_linear_linear__update_project`
+   - Update the Linear project state from "planned" to "started" via `mcporter call 'linear.update_project(...)' --output json`
 
-2. Update the phase issue state to "In Progress" via `mcp__plugin_linear_linear__update_issue`
+2. Update the phase issue state to "In Progress" via `mcporter call 'linear.update_issue(...)' --output json`
 
 ### Step 6: Dispatch to Subagent
 
@@ -234,8 +226,8 @@ Task tool:
     **Linear completion (do this AFTER committing):**
     - Linear issue ID: [issue-id from Step 2]
     - Linear team: [resolved team from Step 1]
-    - Update the issue state to "Done" via mcp__plugin_linear_linear__update_issue
-    - Add a comment via mcp__plugin_linear_linear__create_comment:
+    - Update the issue state to "Done" via mcporter call 'linear.update_issue(...)' --output json
+    - Add a comment via mcporter call 'linear.create_comment(...)' --output json:
       "✅ Phase executed successfully.
 
       **Agent:** [agent-name]

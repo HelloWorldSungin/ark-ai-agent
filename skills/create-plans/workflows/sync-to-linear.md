@@ -4,13 +4,7 @@ Creates Linear issues from ROADMAP.md phases with project creation and agent lab
 
 ## Required Tools
 
-- mcp__plugin_linear_linear__create_issue
-- mcp__plugin_linear_linear__list_projects
-- mcp__plugin_linear_linear__list_teams
-- mcp__plugin_linear_linear__list_issue_labels
-- mcp__plugin_linear_linear__create_issue_label
-- mcp__plugin_linear_linear__create_project
-- mcp__plugin_linear_linear__update_project
+- Bash (mcporter CLI for Linear operations)
 - Read
 
 ## Workflow
@@ -18,7 +12,7 @@ Creates Linear issues from ROADMAP.md phases with project creation and agent lab
 ### Step 0: Resolve Linear Team
 
 - Check if the project's CLAUDE.md specifies a `linear-team` value
-- If not, use `mcp__plugin_linear_linear__list_teams` to list available teams
+- If not, use `mcporter call linear.list_teams --output json` to list available teams
 - If only one team exists, use it automatically
 - If multiple teams, ask user which team to use
 
@@ -40,7 +34,7 @@ Also extract agent assignments from the Phases summary line format: `agent:[name
 
 ### Step 2: Smart Project Detection
 
-1. Search existing projects by name via `mcp__plugin_linear_linear__list_projects`
+1. Search existing projects by name via `mcporter call linear.list_projects --output json`
 2. Extract project name from `.planning/BRIEF.md` or ROADMAP.md title
 
 **If matching project found:**
@@ -49,7 +43,7 @@ Also extract agent assignments from the Phases summary line format: `agent:[name
 
 **If no matching project found:**
 - Read `.planning/BRIEF.md` for problem statement and success criteria
-- Create project via `mcp__plugin_linear_linear__create_project`:
+- Create project via `mcporter call 'linear.create_project(...)' --output json`:
 
 | Field | Source |
 |-------|--------|
@@ -64,8 +58,8 @@ Also extract agent assignments from the Phases summary line format: `agent:[name
 
 1. Collect all unique agent names from ROADMAP.md phase assignments
 2. Determine the **plan-name label**: use the project name from `.planning/BRIEF.md` (the same name used for the Linear project in Step 2)
-3. List existing labels via `mcp__plugin_linear_linear__list_issue_labels`
-4. Ensure the following labels exist (create any that are missing via `mcp__plugin_linear_linear__create_issue_label`):
+3. List existing labels via `mcporter call linear.list_issue_labels team:TEAM --output json`
+4. Ensure the following labels exist (create any that are missing via `mcporter call 'linear.create_issue_label(...)' --output json`):
 
 | Label | Color | Purpose |
 |-------|-------|---------|
@@ -90,7 +84,7 @@ Also extract agent assignments from the Phases summary line format: `agent:[name
 **First, create (or update) the project issue:**
 
 If a new project was created in Step 2, find or create an issue to represent the plan itself:
-1. Create a Linear issue via `mcp__plugin_linear_linear__create_issue`:
+1. Create a Linear issue via `mcporter call 'linear.create_issue(...)' --output json`:
    - **title**: Project name from BRIEF.md
    - **team**: Resolved team from Step 0
    - **state**: "Backlog"
@@ -103,7 +97,7 @@ If a new project was created in Step 2, find or create an issue to represent the
 
 For each phase in ROADMAP.md:
 
-1. Create a Linear issue via `mcp__plugin_linear_linear__create_issue`:
+1. Create a Linear issue via `mcporter call 'linear.create_issue(...)' --output json`:
    - **title**: Phase title from roadmap (e.g., "Phase 01: Foundation")
    - **team**: Resolved team from Step 0
    - **state**: "Backlog" (first phase gets "Todo")

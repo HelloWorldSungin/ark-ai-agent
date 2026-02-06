@@ -5,10 +5,7 @@ allowed-tools:
   - Read
   - Edit
   - Write
-  - mcp__plugin_linear_linear__create_issue
-  - mcp__plugin_linear_linear__list_issues
-  - mcp__plugin_linear_linear__list_issue_labels
-  - mcp__plugin_linear_linear__list_teams
+  - Bash
 ---
 
 # Add Todo Item
@@ -23,14 +20,14 @@ allowed-tools:
 
 2. Resolve Linear team:
    - Check if the project's CLAUDE.md specifies a `linear-team` value
-   - If not, use `mcp__plugin_linear_linear__list_teams` to list available teams
+   - If not, use `mcporter call linear.list_teams --output json` to list available teams
    - If only one team exists, use it automatically
    - If multiple teams, ask user which team to use
    - Cache the resolved team name for steps below
 
 3. Check for duplicates:
    - Extract key concept/action from the new todo
-   - Search existing todos for similar titles or overlapping scope (check both TO-DOS.md and Linear via `mcp__plugin_linear_linear__list_issues` with label "todo", state "Todo", using the resolved team)
+   - Search existing todos for similar titles or overlapping scope (check both TO-DOS.md and Linear via `mcporter call linear.list_issues --output json` with label "todo", state "Todo", using the resolved team)
    - If found, ask user: "A similar todo already exists: [title]. Would you like to:\n\n1. Skip adding (keep existing)\n2. Replace existing with new version\n3. Add anyway as separate item\n\nReply with the number of your choice."
    - Wait for user response before proceeding
 
@@ -43,7 +40,7 @@ allowed-tools:
      - Root cause if identified
 
 5. Create Linear issue:
-   - Use `mcp__plugin_linear_linear__create_issue` with:
+   - Use `mcporter call 'linear.create_issue(...)' --output json` with:
      - **title**: Action verb + component (3-8 words, same as the bold title)
      - **team**: Resolved team from step 2
      - **state**: "Todo"

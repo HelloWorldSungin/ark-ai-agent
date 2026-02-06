@@ -15,11 +15,6 @@ allowed-tools:
   - TaskGet
   - TaskOutput
   - AskUserQuestion
-  - mcp__plugin_linear_linear__list_issues
-  - mcp__plugin_linear_linear__list_issue_labels
-  - mcp__plugin_linear_linear__list_teams
-  - mcp__plugin_linear_linear__update_issue
-  - mcp__plugin_linear_linear__create_comment
 ---
 
 # Build
@@ -45,7 +40,7 @@ PATH_TO_PLAN: $ARGUMENTS
 
 ### Step 2: Linear Integration (optional, non-blocking)
 
-1. Resolve Linear team: check CLAUDE.md for `linear-team`, else `mcp__plugin_linear_linear__list_teams` (auto-select if one team)
+1. Resolve Linear team: check CLAUDE.md for `linear-team`, else `mcporter call linear.list_teams --output json` (auto-select if one team)
 2. Search Linear for a matching issue based on the plan title
 3. If found: update state to "In Progress" and store issue ID for Step 6
 4. If not found: skip silently
@@ -103,8 +98,8 @@ After all tasks complete:
 1. Run any **Validation Commands** from the plan
 2. Verify **Acceptance Criteria** are met
 3. **Linear Integration** — If a Linear issue was found in Step 2:
-   - Update state to "Done" via `mcp__plugin_linear_linear__update_issue`
-   - Add a comment via `mcp__plugin_linear_linear__create_comment`:
+   - Update state to "Done" via `mcporter call 'linear.update_issue(...)' --output json`
+   - Add a comment via `mcporter call 'linear.create_comment(...)' --output json`:
      ```
      Plan executed successfully.
 
