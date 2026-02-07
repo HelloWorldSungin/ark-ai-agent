@@ -17,6 +17,7 @@ Forked from [TACHES](https://github.com/glittercowboy/taches-cc-resources) with 
 | **[tools](#tools)** | Docs, debugging, Ralph loops | 3 | 3 | — |
 | **[prompting](#prompting)** | Prompt engineering for delegation | 3 | — | — |
 | **[expertise](#expertise)** | Domain knowledge (iOS, macOS, n8n) | — | 3 | — |
+| **[native-workflow](#native-workflow)** | Native plan mode iterative workflow | 3 | — | 1 |
 
 ## Installation
 
@@ -188,6 +189,21 @@ Domain knowledge bases loaded by planning for framework-specific context. Each s
 | n8n-automations | n8n workflow automation |
 
 Create new domain expertise with the `extensibility` plugin's `/create-agent-skill` command.
+
+## native-workflow
+
+Lightweight iterative planning using Claude Code's native plan mode with extension awareness.
+
+| Component | Name | Description |
+|-----------|------|-------------|
+| Command | `plan` | Scan extensions, enter native plan mode, save to `.planning/` |
+| Command | `execute` | Execute plan tasks with context monitoring (~50% checkpoint) |
+| Command | `update-plan` | Assess progress via git, revise plan in native plan mode |
+| Agent | `extension-scanner` | Read-only scanner for available commands, skills, and agents |
+
+**Workflow:** `/plan "what to build"` → (fresh session) `/execute` → `/update-plan` → (fresh session) `/execute` → done
+
+**Key difference from `planning`:** Uses Claude Code's native `EnterPlanMode`/`ExitPlanMode` instead of custom plans-as-prompts. Simpler cycle, iterative by design.
 
 ---
 

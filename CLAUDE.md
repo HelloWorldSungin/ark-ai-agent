@@ -22,7 +22,7 @@ ark-ai-agent is a modular Claude Code plugin marketplace providing skills, slash
 
 ### Plugin Structure (v3.0.0)
 
-The repository is organized as 9 independent plugins under `plugins/`. Users install selectively to minimize context footprint.
+The repository is organized as 10 independent plugins under `plugins/`. Users install selectively to minimize context footprint.
 
 ```
 plugins/
@@ -34,7 +34,8 @@ plugins/
 ├── todos/           # Linear-integrated task management (cmds)
 ├── tools/           # Utilities: docs, debug, Ralph (cmds + skills)
 ├── prompting/       # Prompt engineering (cmds)
-└── expertise/       # Domain knowledge: iOS, macOS, n8n (skills)
+├── expertise/       # Domain knowledge: iOS, macOS, n8n (skills)
+└── native-workflow/ # Native plan mode workflow (cmds + agent)
 ```
 
 Each plugin has:
@@ -59,6 +60,7 @@ plugins/<name>/
 | **tools** | 3 (docs-with-mermaid, debug, setup-ralph) | 3 | 0 | development |
 | **prompting** | 3 (create-prompt, run-prompt, ask-me-questions) | 0 | 0 | productivity |
 | **expertise** | 0 | 1 (3 domain sub-skills: iOS, macOS, n8n) | 0 | development |
+| **native-workflow** | 3 (plan, execute, update-plan) | 0 | 1 (extension-scanner) | productivity |
 
 ### Cross-Plugin Dependencies
 
@@ -74,7 +76,7 @@ All hard dependencies (Skill tool calls, agent references) are within the same p
 
 **Subagents** (`plugins/<name>/agents/*.md`) — Specialized validation/curation agents. **Team agents** (`plugins/planning/agents/team/*.md`) — builder (focused execution) and validator (read-only verification) for team-orchestrated plans.
 
-**Plugin Config** — Root `.claude-plugin/marketplace.json` (9 plugin entries) + per-plugin `.claude-plugin/plugin.json` (metadata).
+**Plugin Config** — Root `.claude-plugin/marketplace.json` (10 plugin entries) + per-plugin `.claude-plugin/plugin.json` (metadata).
 
 ### Key Systems
 

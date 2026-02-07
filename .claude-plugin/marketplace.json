@@ -71,6 +71,13 @@
       "description": "Domain knowledge bases — iOS, macOS, and n8n expertise for framework-specific planning",
       "version": "1.0.0",
       "category": "development"
+    },
+    {
+      "name": "native-workflow",
+      "source": "./plugins/native-workflow",
+      "description": "Native plan mode workflow with extension awareness and iterative execution",
+      "version": "1.0.0",
+      "category": "productivity"
     }
   ]
 }
