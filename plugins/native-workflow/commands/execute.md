@@ -14,14 +14,13 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-You are executing the `/execute` command — loads a plan from `.planning/` and executes it with context window monitoring.
+<objective>
+Load and execute the plan at $ARGUMENTS (or most recent plan in `.planning/`) with context window monitoring, stopping at ~50% usage to preserve output quality.
+</objective>
 
-**Input:** $ARGUMENTS
+<process>
 
----
-
-## Step 1: Load Plan
-
+<step name="load_plan">
 1. **Resolve plan path:**
    - If `$ARGUMENTS` provides a path: use it directly
    - If no path provided: find the most recently modified `.planning/*.md` file
@@ -40,11 +39,9 @@ You are executing the `/execute` command — loads a plan from `.planning/` and 
    - If ALL tasks are `[DONE]`: report "All tasks already completed" and exit
 
 4. **Load context files** listed in the plan (read them to establish working context).
+</step>
 
----
-
-## Step 2: Execute Tasks
-
+<step name="execute_tasks">
 Process pending tasks sequentially:
 
 1. **For each task:**
@@ -57,18 +54,20 @@ Process pending tasks sequentially:
    - **Auto-fix:** Bugs, type errors, and blockers encountered during implementation — fix them and note the deviation
    - **Ask user:** Architectural changes, scope additions, or significant departures from the plan — use AskUserQuestion
    - **Log:** Enhancements or nice-to-haves discovered during execution — append to `.planning/ISSUES.md` (create if needed)
+</step>
 
----
+<step name="context_monitoring">
+After completing each task, assess your context window usage.
 
-## Step 3: Context Monitoring
+**Checkpoint triggers** — STOP execution if ANY of these apply:
+- You have completed 3+ tasks AND had extensive tool output (many large file reads, long bash results)
+- You have exchanged more than ~80 back-and-forth turns with tool calls
+- You notice responses becoming slower or less detailed (signs of high context usage)
+- You are uncertain whether you have enough context remaining to complete the next task well
 
-After completing each task, assess your context window usage:
-
-- **Below ~50%:** Continue to the next task normally
-- **At ~50% or above:** **STOP** execution and report:
-
+When stopping, report:
 ```
-Context approaching limit (~50% used).
+Context approaching limit.
 
 Completed:
 - [x] Task 1: description
@@ -83,25 +82,40 @@ Next steps:
 2. Start a fresh session
 3. Run: /execute .planning/YYYY-MM-DD_plan-name.md
 ```
+</step>
 
-**Context estimation heuristic:** Consider the total volume of text exchanged so far (all prompts, tool results, and responses). If you've had many large file reads, extensive tool output, or numerous back-and-forth exchanges, you're likely approaching the limit.
-
----
-
-## Step 4: Completion
-
+<step name="completion">
 If all tasks are completed without hitting the context limit:
 
-1. **Run verification** checks from the plan's Verification section
-2. **Report results:**
+1. **Run verification** checks from the plan's Verification section.
+2. **Report results.**
+</step>
 
+</process>
+
+<verification>
+Before reporting completion, verify:
+- All pending tasks executed and completion criteria met
+- Verification checks from the plan passing
+- All deviations documented
+- `.planning/ISSUES.md` updated if enhancements were discovered
+</verification>
+
+<success_criteria>
+- All non-`[DONE]` tasks executed with completion criteria verified
+- Plan verification checks passing
+- Deviations reported (or "None")
+- Files modified listed
+- If context limit reached: clear stop report with completed/remaining task lists
+</success_criteria>
+
+<output_format>
 ```
 Plan executed successfully: .planning/YYYY-MM-DD_plan-name.md
 
 Completed:
 - [x] Task 1: description
 - [x] Task 2: description
-- [x] Task 3: description
 
 Verification:
 - [result of each verification check]
@@ -112,11 +126,11 @@ Files modified:
 Deviations:
 - [any deviations from the plan, or "None"]
 ```
+</output_format>
 
----
-
-**Critical Rules:**
-- Skip `[DONE]` tasks — never re-execute completed work
-- Context monitoring is mandatory — degraded output at high context usage is worse than stopping early
-- Deviations are tracked, not hidden — always report what changed from the plan
-- Execute in the user's current session — this command assumes the user started a fresh session for clean context
+<constraints>
+- NEVER re-execute `[DONE]` tasks — skip completed work
+- Context monitoring is MANDATORY — degraded output at high context usage is worse than stopping early
+- ALWAYS track and report deviations — never hide what changed from the plan
+- Execute in the user's current session — this command assumes a fresh session for clean context
+</constraints>

@@ -32,7 +32,7 @@ Scan these locations in priority order (highest first):
    - Agents: `~/.claude/plugins/cache/*/*/agents/*.md`
 </scan_locations>
 
-<process>
+<workflow>
 <step name="discover_files">
 Use Glob to find all extension files at each location. Run all three location scans in parallel for efficiency.
 </step>
@@ -40,10 +40,11 @@ Use Glob to find all extension files at each location. Run all three location sc
 <step name="extract_metadata">
 For each discovered file, read ONLY the first 15 lines to extract YAML frontmatter fields:
 - `name` or `description` — the extension's identity
-- For commands: derive name from filename (e.g., `plan.md` → `/plan`)
+- For commands: derive name from filename (e.g., `planning.md` → `/planning`)
 - For skills: derive name from parent directory (e.g., `debug-like-expert/SKILL.md` → `debug-like-expert`)
 - For agents: derive name from filename (e.g., `playbook-curator.md` → `playbook-curator`)
 - For plugin-sourced extensions: derive plugin name from path (e.g., `cache/consider/...` → `consider`)
+- For missing descriptions: use "[No description]" as placeholder
 </step>
 
 <step name="deduplicate">
@@ -73,23 +74,37 @@ Return a markdown summary in this exact format:
 |-------|--------|-------------|
 | name  | user   | Brief description |
 ```
+
+- If a category has 0 extensions, show the section header with "(0 found)" and an empty table
+- If source is a plugin, format as: `plugin:plugin-name`
 </step>
-</process>
+</workflow>
+
+<error_handling>
+Handle these scenarios gracefully:
+- Missing YAML frontmatter: skip file silently
+- Invalid YAML syntax: skip file silently
+- Missing description field: use "[No description]" placeholder
+- File read errors: log in summary footer, continue scanning
+- Empty directories: include "0 found" in section header
+</error_handling>
 
 <constraints>
-<must_do>
-- Scan all three levels (project, user, plugin)
-- Read only frontmatter — never read full file contents
-- De-duplicate by name with priority ordering
-- Include source attribution for every extension
-- Return results even if some locations have no extensions
-</must_do>
-
-<must_not>
-- Read full file contents beyond frontmatter
-- Modify any files
-- Execute any commands
-- Skip any scan location
-- Include extensions that fail to parse (silently skip them)
-</must_not>
+- MUST scan all three levels (project, user, plugin)
+- MUST read only frontmatter — NEVER read full file contents beyond the first 15 lines
+- MUST de-duplicate by name with priority ordering
+- MUST include source attribution for every extension
+- MUST return results even if some locations have no extensions
+- NEVER modify any files
+- NEVER execute any commands
+- NEVER skip any scan location
 </constraints>
+
+<success_criteria>
+Task is complete when:
+- All three levels (project, user, plugin) have been scanned
+- Metadata extracted from all discovered extension files
+- Duplicates resolved using priority ordering (project > user > plugin)
+- Markdown summary returned with all three tables (Commands, Skills, Agents)
+- Each extension has name, source, and description populated
+</success_criteria>
