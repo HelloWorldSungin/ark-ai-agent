@@ -1,20 +1,25 @@
 ---
-description: Re-assess plan progress by marking completed tasks, incorporating issues, and revising remaining work using native plan mode
-argument-hint: [path-to-plan]
+description: Update a plan with current progress, roadblocks, and issues encountered during execution
 allowed-tools:
   - Read
   - Bash(git log *)
   - Bash(git diff *)
+  - Bash(ls *)
   - Glob
   - Grep
   - Write
   - EnterPlanMode
   - ExitPlanMode
+argument-hint: [path-to-plan]
 ---
 
 <objective>
-Update the plan at $ARGUMENTS (or most recent plan in `.planning/`) — assess progress via git history, mark completed tasks `[DONE]`, revise remaining work, and incorporate discovered issues.
+Update the plan at `$ARGUMENTS` (or most recent plan in `.planning/`) — assess progress via git history, identify roadblocks and issues, mark completed tasks `[DONE]`, and revise remaining work.
 </objective>
+
+<context>
+Recent plans: !`ls -lt .planning/*.md 2>/dev/null | head -3 || echo "No plans found"`
+</context>
 
 <process>
 
@@ -24,11 +29,12 @@ Update the plan at $ARGUMENTS (or most recent plan in `.planning/`) — assess p
    - If no path provided: find the most recently modified `.planning/*.md` file
    - If no plans found: error — "No plans found in `.planning/`. Nothing to update."
 
-2. **Read the existing plan** and parse its sections (Objective, Tasks, Verification, etc.)
+2. **Read the existing plan** and parse its sections (Objective, Tasks, Extensions to Use, Execution Mode, Verification, etc.)
 
 3. **Extract date context** from the plan filename:
-   - Parse `YYYY-MM-DD` from the filename (e.g., `2026-02-07_rest-api.md` → `2026-02-07`)
-   - This is used to scope git history analysis
+   - Parse `YYYY-MM-DD` from the filename (e.g., `2026-02-07_rest-api.md` -> `2026-02-07`)
+   - If no date found in filename: use `--since="1 week ago"` as fallback
+   - This scopes the git history analysis
 
 4. **Analyze actual progress** using git history:
    - `git log --since="YYYY-MM-DD" --oneline`
@@ -39,7 +45,12 @@ Update the plan at $ARGUMENTS (or most recent plan in `.planning/`) — assess p
    - Check if completion criteria can be verified from the current state
    - Build a status assessment: `[DONE]`, `[PARTIAL]`, or `[TODO]` for each task
 
-6. **Check for issues** — read `.planning/ISSUES.md` if it exists (logged during `/execute`)
+6. **Check for roadblocks and issues:**
+   - If `.planning/ISSUES.md` exists: read and incorporate issues logged during `/native-workflow:execute`
+   - If `.planning/ISSUES.md` does not exist: rely solely on git history and file state analysis
+   - Check if any tasks were partially completed (look for `[PARTIAL]` markers in the plan)
+   - Note any error patterns from execution logs or git history
+   - Assess: what went wrong, what's blocking progress
 </phase>
 
 <phase name="2_revise_plan" label="IN native plan mode">
@@ -60,7 +71,14 @@ Update the plan at $ARGUMENTS (or most recent plan in `.planning/`) — assess p
    - **Add new tasks** if issues were discovered during execution (from ISSUES.md or git analysis)
    - **Update Context Files** section if new files are now relevant
    - **Update Verification** to cover remaining work only (completed verifications removed)
-   - **Preserve Extensions to Use** section (update if new extensions are relevant)
+   - **Preserve `## Extensions to Use` section** — update if new extensions are relevant
+   - **Preserve `## Execution Mode` section** — update if the mode should change based on experience
+   - **Add `## Roadblocks & Issues` section:**
+     ```
+     ## Roadblocks & Issues
+     - [Issue 1]: description and status
+     - [Issue 2]: description and resolution
+     ```
 
 3. **Exit plan mode:** Call `ExitPlanMode` — user reviews and approves the updated plan
 </phase>
@@ -81,7 +99,7 @@ Update the plan at $ARGUMENTS (or most recent plan in `.planning/`) — assess p
    - Remaining: M tasks
    - New: K tasks added
 
-   To continue: start a fresh session and run /execute .planning/YYYY-MM-DD_plan-name.md
+   To continue: start a fresh session and run /native-workflow:execute .planning/YYYY-MM-DD_plan-name.md
    ```
 </phase>
 
@@ -90,15 +108,17 @@ Update the plan at $ARGUMENTS (or most recent plan in `.planning/`) — assess p
 <verification>
 Before reporting completion, verify:
 - All completed tasks correctly marked `[DONE]` based on git evidence
-- ISSUES.md items incorporated as new tasks (if ISSUES.md exists)
-- Updated plan is self-contained and executable by `/execute`
+- ISSUES.md items incorporated as new tasks or noted in Roadblocks & Issues (if ISSUES.md exists)
+- Updated plan is self-contained and executable by `/native-workflow:execute`
 - Original plan file overwritten (not a new file)
+- `## Execution Mode` and `## Extensions to Use` sections preserved (updated if needed)
 </verification>
 
 <success_criteria>
 - Progress assessed against git history and file changes
 - Completed tasks marked `[DONE]` with evidence
 - Remaining tasks updated with current context
+- Roadblocks & Issues section added with any discovered problems
 - New tasks added from ISSUES.md or discovered issues
 - User approved updated plan via ExitPlanMode
 - Original plan file overwritten with updated content
@@ -108,5 +128,6 @@ Before reporting completion, verify:
 - NEVER delete tasks — mark them `[DONE]`, don't remove them (preserves history)
 - Git analysis is best-effort — if git history is limited, rely on file existence checks and plan cross-referencing
 - ALWAYS use native plan mode for revision — ensures user reviews changes before they're saved
-- ALWAYS overwrite the original file — the cycle is plan → execute → update → execute on the SAME file
+- ALWAYS overwrite the original file — the cycle is plan-setup -> execute -> update -> execute on the SAME file
+- ALWAYS preserve `## Execution Mode` and `## Extensions to Use` sections (update content if needed, never remove)
 </constraints>

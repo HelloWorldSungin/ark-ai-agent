@@ -1,6 +1,5 @@
 ---
-description: Execute a plan from .planning/ with context monitoring — self-checkpoints at ~50% usage
-argument-hint: [path-to-plan]
+description: Execute a plan from .planning/ with the specified execution mode — self-checkpoints at ~45% context usage
 allowed-tools:
   - Read
   - Write
@@ -9,128 +8,187 @@ allowed-tools:
   - Glob
   - Grep
   - Task
+  - Skill
   - WebSearch
   - WebFetch
   - AskUserQuestion
+  - TeamCreate
+  - TeamDelete
+  - SendMessage
+  - TaskCreate
+  - TaskList
+  - TaskUpdate
+  - TaskGet
+argument-hint: <path-to-plan>
 ---
 
 <objective>
-Load and execute the plan at $ARGUMENTS (or most recent plan in `.planning/`) with context window monitoring, stopping at ~50% usage to preserve output quality.
+Load and execute the plan file at the path specified in `$ARGUMENTS` using the execution mode embedded in the plan, with context window monitoring that stops at ~45% usage to preserve output quality.
 </objective>
+
+<context>
+Plan file: !`cat "$ARGUMENTS" 2>/dev/null | head -5 || echo "File not found"`
+</context>
 
 <process>
 
-<step name="load_plan">
-1. **Resolve plan path:**
-   - If `$ARGUMENTS` provides a path: use it directly
-   - If no path provided: find the most recently modified `.planning/*.md` file
-   - If no plans found: error — "No plans found in `.planning/`. Run `/planning` first to create one."
+<step name="1_load_plan" label="Load and parse the plan">
+1. **Validate input:**
+   - `$ARGUMENTS` is REQUIRED — if empty, error with: "Usage: `/native-workflow:execute <path-to-plan>` — provide the path to a plan in `.planning/`"
+   - Verify the file exists — if not, error with: "Plan not found at `$ARGUMENTS` — check the path and try again."
 
-2. **Read the plan file** and parse its sections:
+2. **Read the plan file** at the given path and parse its sections:
    - **Objective** — what we're building
    - **Context Files** — files to read before starting
    - **Tasks** — numbered implementation tasks with completion criteria
    - **Extensions to Use** — available extensions referenced in the plan
+   - **Execution Mode** — `sequential`, `parallel`, or `teams` (default to `sequential` if missing)
    - **Verification** — how to verify completion
 
 3. **Identify task status:**
-   - Tasks prefixed with `[DONE]` have already been completed (skip them)
+   - Tasks prefixed with `[DONE]` have already been completed — skip them
    - All other tasks are pending execution
    - If ALL tasks are `[DONE]`: report "All tasks already completed" and exit
 
 4. **Load context files** listed in the plan (read them to establish working context).
+
+5. **Extract execution mode** from the `## Execution Mode` section. If the section is missing, default to `sequential`.
 </step>
 
-<step name="execute_tasks">
-Process pending tasks sequentially:
+<deviation_rules>
+All execution modes follow these deviation rules:
+- **Auto-fix:** Bugs, type errors, and blockers — fix them and note the deviation
+- **Ask user:** Architecture changes, scope additions, or significant departures — use AskUserQuestion
+- **Log:** Enhancements or nice-to-haves — append to `.planning/ISSUES.md` (create if needed)
+</deviation_rules>
 
-1. **For each task:**
+<step name="2_execute" label="Execute tasks by mode">
+
+<mode name="sequential">
+Process pending tasks one by one in the main context:
+
+1. **For each pending task:**
    - Read the task description and completion criteria
+   - Check if any extensions were allocated in `## Extensions to Use` — invoke relevant skills or reference agents
    - Implement the task using available tools
-   - Verify completion criteria are met before moving on
+   - Verify completion criteria are met
+   - Mark the task `[DONE]` in the plan file via Edit tool
    - If a task fails or is blocked: note the issue and continue to the next task if possible
 
-2. **Deviation rules:**
-   - **Auto-fix:** Bugs, type errors, and blockers encountered during implementation — fix them and note the deviation
-   - **Ask user:** Architectural changes, scope additions, or significant departures from the plan — use AskUserQuestion
-   - **Log:** Enhancements or nice-to-haves discovered during execution — append to `.planning/ISSUES.md` (create if needed)
+2. Apply deviation rules above for any departures from the plan.
+</mode>
+
+<mode name="parallel">
+Dispatch independent tasks as sub-agents:
+
+1. **Analyze task dependencies** from the plan:
+   - Group tasks into **independent** (can run in parallel) and **dependent** (must wait for others)
+
+2. **For each batch of independent tasks:**
+   - Dispatch each as a Task tool sub-agent with `run_in_background: true`
+   - Provide each sub-agent with: task description, relevant context files, allocated extensions, completion criteria
+   - Use `subagent_type: general-purpose` for implementation tasks
+
+3. **Monitor completion** via TaskOutput — check each background agent for results.
+
+4. **For dependent tasks:** Wait for their blockers to complete, then dispatch the next batch.
+
+5. **After all sub-agents complete:**
+   - Collect results from each
+   - Mark tasks `[DONE]` in the plan file
+   - Aggregate deviations across all sub-agents
+</mode>
+
+<mode name="teams">
+Orchestrate via agent teams with builder+validator separation:
+
+1. **Create team:** `TeamCreate` with a descriptive name derived from the plan objective.
+
+2. **Create task entries:** `TaskCreate` for each pending plan task, including:
+   - Task description and completion criteria from the plan
+   - Allocated extensions from `## Extensions to Use`
+
+3. **Set dependencies:** Use `TaskUpdate` with `addBlockedBy` to mirror plan task dependencies.
+
+4. **Dispatch workers:** For each unblocked task:
+   - Dispatch a **builder** agent (`subagent_type: general-purpose`) via Task tool with `team_name`
+   - After builder completes: dispatch a **validator** agent (`subagent_type: Explore`, read-only) to verify completion criteria
+
+5. **Monitor progress** via `TaskList` — dispatch new tasks as dependencies resolve.
+
+6. **On completion:** `TeamDelete` to clean up team resources.
+</mode>
+
 </step>
 
-<step name="context_monitoring">
-After completing each task, assess your context window usage.
+<step name="3_context_monitoring" label="Monitor context usage (ALL modes)">
+After each task completion (or sub-agent batch), assess context window usage.
 
-**Checkpoint triggers** — STOP execution if ANY of these apply:
-- You have completed 3+ tasks AND had extensive tool output (many large file reads, long bash results)
-- You have exchanged more than ~80 back-and-forth turns with tool calls
-- You notice responses becoming slower or less detailed (signs of high context usage)
-- You are uncertain whether you have enough context remaining to complete the next task well
+**STOP execution if you observe ANY of these signals:**
+- Responses becoming noticeably shorter or less detailed than earlier in the session
+- Difficulty tracking multiple file states or forgetting earlier changes
+- Reading the same files multiple times because prior content was lost from context
+- Completed **3+ tasks** with extensive tool output (many large file reads, long bash results)
+- Uncertain whether enough context remains to complete the next task well
 
-When stopping, report:
-```
-Context approaching limit.
-
-Completed:
-- [x] Task 1: description
-- [x] Task 2: description
-
-Remaining:
-- [ ] Task 3: description
-- [ ] Task 4: description
-
-Next steps:
-1. Run: /update-plan .planning/YYYY-MM-DD_plan-name.md
-2. Start a fresh session
-3. Run: /execute .planning/YYYY-MM-DD_plan-name.md
-```
+**When stopping:**
+1. Mark all completed tasks `[DONE]` in the plan file
+2. Report using the output format below with completed and remaining sections
+3. Instruct user:
+   ```
+   Next steps:
+   1. Run: /native-workflow:update-plan .planning/YYYY-MM-DD_plan-name.md
+   2. Start a fresh session
+   3. Run: /native-workflow:execute .planning/YYYY-MM-DD_plan-name.md
+   ```
 </step>
 
-<step name="completion">
-If all tasks are completed without hitting the context limit:
+<step name="4_completion" label="Final verification">
+If all tasks complete without hitting the context limit:
 
-1. **Run verification** checks from the plan's Verification section.
-2. **Report results.**
+1. **Run verification** checks from the plan's `## Verification` section.
+2. **Report results** using the output format below.
 </step>
 
 </process>
 
-<verification>
-Before reporting completion, verify:
-- All pending tasks executed and completion criteria met
-- Verification checks from the plan passing
-- All deviations documented
-- `.planning/ISSUES.md` updated if enhancements were discovered
-</verification>
-
-<success_criteria>
-- All non-`[DONE]` tasks executed with completion criteria verified
-- Plan verification checks passing
-- Deviations reported (or "None")
-- Files modified listed
-- If context limit reached: clear stop report with completed/remaining task lists
-</success_criteria>
-
 <output_format>
 ```
-Plan executed successfully: .planning/YYYY-MM-DD_plan-name.md
+Execution complete: .planning/YYYY-MM-DD_plan-name.md
+Mode: sequential | parallel | teams
 
 Completed:
 - [x] Task 1: description
 - [x] Task 2: description
 
+Remaining (if stopped early):
+- [ ] Task 3: description
+
 Verification:
-- [result of each verification check]
+- [result of each check]
 
 Files modified:
-- [list of files created/modified]
+- [list]
 
 Deviations:
-- [any deviations from the plan, or "None"]
+- [any deviations, or "None"]
 ```
 </output_format>
 
+<success_criteria>
+- All pending tasks executed with completion criteria verified
+- Execution mode from `## Execution Mode` section respected
+- Plan verification checks passing (if all tasks completed)
+- Deviations reported (or "None")
+- Files modified listed
+- Output format followed for either completion or early stop
+</success_criteria>
+
 <constraints>
+- `$ARGUMENTS` is REQUIRED — do not fall back to most-recent file lookup
 - NEVER re-execute `[DONE]` tasks — skip completed work
-- Context monitoring is MANDATORY — degraded output at high context usage is worse than stopping early
+- Context monitoring is MANDATORY — degraded output at high context is worse than stopping early
 - ALWAYS track and report deviations — never hide what changed from the plan
 - Execute in the user's current session — this command assumes a fresh session for clean context
+- For `parallel` and `teams` modes: ensure sub-agents receive sufficient context to work independently
 </constraints>
