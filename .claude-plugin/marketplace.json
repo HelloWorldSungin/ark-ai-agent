@@ -5,16 +5,72 @@
     "email": "sungin@arknode.com"
   },
   "metadata": {
-    "description": "Curated Claude Code skills and commands for prompt engineering, playbook system (ACE pattern), and productivity workflows",
-    "version": "2.4.0"
+    "description": "Modular Claude Code plugins for planning, prompting, reflection, extensibility, and productivity workflows",
+    "version": "3.0.0"
   },
   "plugins": [
     {
-      "name": "ark-ai-agent",
-      "source": "./",
-      "description": "Skills and commands for prompt engineering, MCP servers, subagents, hooks, playbook system (ACE pattern), and productivity workflows",
-      "version": "2.4.0",
-      "strict": true
+      "name": "consider",
+      "source": "./plugins/consider",
+      "description": "Mental model thinking frameworks — first principles, inversion, 80/20, second-order effects, and more",
+      "version": "1.0.0",
+      "category": "productivity"
+    },
+    {
+      "name": "research",
+      "source": "./plugins/research",
+      "description": "Structured research workflows — competitive analysis, deep dives, feasibility studies, landscape surveys",
+      "version": "1.0.0",
+      "category": "productivity"
+    },
+    {
+      "name": "reflection",
+      "source": "./plugins/reflection",
+      "description": "ACE playbook system — session reflection, knowledge accumulation, and playbook curation",
+      "version": "1.0.0",
+      "category": "productivity"
+    },
+    {
+      "name": "extensibility",
+      "source": "./plugins/extensibility",
+      "description": "Create, audit, and heal Claude Code extensions — skills, commands, subagents, hooks, MCP servers",
+      "version": "1.0.0",
+      "category": "development"
+    },
+    {
+      "name": "planning",
+      "source": "./plugins/planning",
+      "description": "Project planning and execution — solo plans, team orchestration, Linear integration",
+      "version": "1.0.0",
+      "category": "productivity"
+    },
+    {
+      "name": "todos",
+      "source": "./plugins/todos",
+      "description": "Task management with Linear integration — capture, check, and hand off todos",
+      "version": "1.0.0",
+      "category": "productivity"
+    },
+    {
+      "name": "tools",
+      "source": "./plugins/tools",
+      "description": "Standalone utilities — Mermaid documentation, expert debugging, Ralph coding loops",
+      "version": "1.0.0",
+      "category": "development"
+    },
+    {
+      "name": "prompting",
+      "source": "./plugins/prompting",
+      "description": "Prompt engineering for task delegation — create prompts, run prompts, guided questioning",
+      "version": "1.0.0",
+      "category": "productivity"
+    },
+    {
+      "name": "expertise",
+      "source": "./plugins/expertise",
+      "description": "Domain knowledge bases — iOS, macOS, and n8n expertise for framework-specific planning",
+      "version": "1.0.0",
+      "category": "development"
     }
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "name": "todos",
+  "version": "1.0.0",
+  "description": "Task management with Linear integration — capture, check, and hand off todos",
+  "author": {
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
+  }
+}

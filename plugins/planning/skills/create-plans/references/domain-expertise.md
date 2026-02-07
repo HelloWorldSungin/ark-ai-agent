@@ -1,5 +1,7 @@
 # Domain Expertise Structure
 
+> **Cross-plugin dependency:** Domain expertise skills live in the `expertise` plugin. Install it with: `/plugin install expertise@ark-ai-agent`
+
 Guide for creating domain expertise skills that work efficiently with create-plans.
 
 ## Purpose

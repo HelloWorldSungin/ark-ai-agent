@@ -1,0 +1,9 @@
+{
+  "name": "extensibility",
+  "version": "1.0.0",
+  "description": "Create, audit, and heal Claude Code extensions — skills, commands, subagents, hooks, MCP servers",
+  "author": {
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
+  }
+}

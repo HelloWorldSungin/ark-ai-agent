@@ -1,0 +1,9 @@
+{
+  "name": "prompting",
+  "version": "1.0.0",
+  "description": "Prompt engineering for task delegation — create prompts, run prompts, guided questioning",
+  "author": {
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
+  }
+}

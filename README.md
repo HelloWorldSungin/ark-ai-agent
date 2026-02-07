@@ -1,268 +1,204 @@
 # ark-ai-agent
 
-A growing collection of custom Claude Code resources built for real workflows. Forked from [TÂCHES](https://github.com/glittercowboy/taches-cc-resources) with added playbook system (ACE pattern) for cross-session knowledge accumulation.
+A modular marketplace of Claude Code plugins for planning, prompting, reflection, and productivity workflows. Install only what you need — each plugin is independent with its own commands, skills, and agents.
 
-## What's Inside
+Forked from [TACHES](https://github.com/glittercowboy/taches-cc-resources) with added playbook system (ACE pattern) for cross-session knowledge accumulation.
 
-**[Commands](#commands)** (29 total) - Slash commands that expand into structured workflows
-- **Meta-Prompting**: Separate planning from execution with staged prompts
-- **Todo Management**: Capture context mid-work, resume later with full state
-- **Thinking Models**: Mental frameworks (first principles, inversion, 80/20, etc.)
-- **Deep Analysis**: Systematic debugging methodology with evidence and hypothesis testing
+## Plugin Catalog
 
-**[Skills](#skills)** (11 total) - Autonomous workflows that research, generate, and self-heal
-- **Create Plans**: Hierarchical project planning for solo developer + Claude workflows
-- **Create MCP Servers**: Build MCP servers for Claude integrations (Python/TypeScript)
-- **Create Agent Skills**: Build new skills by describing what you want
-- **Create Meta-Prompts**: Generate staged workflow prompts with dependency detection
-- **Create Slash Commands**: Build custom commands with proper structure
-- **Create Subagents**: Build specialized Claude instances for isolated contexts
-- **Create Hooks**: Build event-driven automation
-- **Debug Like Expert**: Systematic debugging with evidence gathering and hypothesis testing
-- **Setup Ralph**: Set up Geoffrey Huntley's Ralph Wiggum autonomous coding loop
-
-**[Agents](#agents)** (4 total) - Specialized subagents for validation and quality
-- **skill-auditor**: Reviews skills for best practices compliance
-- **slash-command-auditor**: Reviews commands for proper structure
-- **subagent-auditor**: Reviews agent configurations for effectiveness
+| Plugin | What it does | Commands | Skills | Agents |
+|--------|-------------|----------|--------|--------|
+| **[consider](#consider)** | Mental model thinking frameworks | 12 | — | — |
+| **[research](#research)** | Structured research workflows | 8 | — | — |
+| **[reflection](#reflection)** | ACE playbook system | 2 | 2 | 1 |
+| **[extensibility](#extensibility)** | Create/audit/heal Claude Code extensions | 9 | 6 | 3 |
+| **[planning](#planning)** | Project planning + team orchestration | 4 | 1 | 2 |
+| **[todos](#todos)** | Linear-integrated task management | 3 | — | — |
+| **[tools](#tools)** | Docs, debugging, Ralph loops | 3 | 3 | — |
+| **[prompting](#prompting)** | Prompt engineering for delegation | 3 | — | — |
+| **[expertise](#expertise)** | Domain knowledge (iOS, macOS, n8n) | — | 3 | — |
 
 ## Installation
 
-### Option 1: Plugin Install (Recommended)
+### Selective Install (Recommended)
 
 From within Claude Code:
 
 ```
+# Add the marketplace
 /plugin marketplace add HelloWorldSungin/ark-ai-agent
-/plugin install ark-ai-agent@ark-ai-agent
+
+# Install only plugins you need
+/plugin install consider@ark-ai-agent
+/plugin install planning@ark-ai-agent
+/plugin install reflection@ark-ai-agent
 ```
 
-Or if you have it as a local submodule:
+Or from a local submodule:
 
 ```
 /plugin marketplace add ./external/ark-ai-agent
-/plugin install ark-ai-agent@ark-ai-agent
+/plugin install consider@ark-ai-agent
 ```
 
-You can also use the interactive `/plugin` UI to browse and install.
+Use the interactive `/plugin` UI to browse all available plugins.
 
-### Option 2: Manual Install
+### Migration from v2.x
 
-```bash
-git clone git@github.com:HelloWorldSungin/ark-ai-agent.git
-cd ark-ai-agent
+v3.0.0 replaces the monolithic `ark-ai-agent` plugin with 9 independent plugins. To migrate:
 
-cp -r commands/* ~/.claude/commands/
-cp -r skills/* ~/.claude/skills/
-cp -r agents/* ~/.claude/agents/
-```
+1. Remove the old plugin: `/plugin uninstall ark-ai-agent@ark-ai-agent`
+2. Install the plugins you need (see catalog above)
+3. Commands that were `ark-ai-agent:consider:first-principles` are now `consider:first-principles`
 
-Start a new Claude Code session to use the commands, skills, and agents. Project-specific data (prompts, todos, playbooks) lives in each project's working directory.
+---
 
-## Commands
-
-### Meta-Prompting
-
-Separate analysis from execution. Describe what you want in natural language, Claude generates a rigorous prompt, then runs it in a fresh sub-agent context.
-
-- [`/create-prompt`](./commands/create-prompt.md) - Generate optimized prompts with XML structure
-- [`/run-prompt`](./commands/run-prompt.md) - Execute saved prompts in sub-agent contexts
-
-### Todo Management
-
-Capture ideas mid-conversation without derailing current work. Resume later with full context intact.
-
-- [`/add-to-todos`](./commands/add-to-todos.md) - Capture tasks with full context
-- [`/check-todos`](./commands/check-todos.md) - Resume work on captured tasks
-
-### Context Handoff
-
-Create structured handoff documents to continue work in a fresh context. Reference with `@whats-next.md` to resume seamlessly.
-
-- [`/whats-next`](./commands/whats-next.md) - Create handoff document for fresh context
-
-### Create Extensions
-
-Wrapper commands that invoke the skills below.
-
-- [`/create-agent-skill`](./commands/create-agent-skill.md) - Create a new skill
-- [`/create-meta-prompt`](./commands/create-meta-prompt.md) - Create staged workflow prompts
-- [`/create-slash-command`](./commands/create-slash-command.md) - Create a new slash command
-- [`/create-subagent`](./commands/create-subagent.md) - Create a new subagent
-- [`/create-hook`](./commands/create-hook.md) - Create a new hook
-
-### Audit Extensions
-
-Invoke auditor subagents.
-
-- [`/audit-skill`](./commands/audit-skill.md) - Audit skill for best practices
-- [`/audit-slash-command`](./commands/audit-slash-command.md) - Audit command for best practices
-- [`/audit-subagent`](./commands/audit-subagent.md) - Audit subagent for best practices
-
-### Playbook (ACE Pattern)
-
-Accumulate reusable knowledge across sessions. Strategies, pitfalls, code patterns, and decisions are stored as bullets with helpful/harmful counters.
-
-- [`/session-reflect`](./commands/session-reflect.md) - Analyze session and extract learnings
-- [`/playbook-update`](./commands/playbook-update.md) - Apply reflection to playbook files
-
-### Self-Improvement
-
-- [`/heal-skill`](./commands/heal-skill.md) - Fix skills based on execution issues
-
-### Thinking Models
+## consider
 
 Apply mental frameworks to decisions and problems.
 
-- [`/consider:pareto`](./commands/consider/pareto.md) - Apply 80/20 rule to focus on what matters
-- [`/consider:first-principles`](./commands/consider/first-principles.md) - Break down to fundamentals and rebuild
-- [`/consider:inversion`](./commands/consider/inversion.md) - Solve backwards (what guarantees failure?)
-- [`/consider:second-order`](./commands/consider/second-order.md) - Think through consequences of consequences
-- [`/consider:5-whys`](./commands/consider/5-whys.md) - Drill to root cause
-- [`/consider:occams-razor`](./commands/consider/occams-razor.md) - Find simplest explanation
-- [`/consider:one-thing`](./commands/consider/one-thing.md) - Identify highest-leverage action
-- [`/consider:swot`](./commands/consider/swot.md) - Map strengths, weaknesses, opportunities, threats
-- [`/consider:eisenhower-matrix`](./commands/consider/eisenhower-matrix.md) - Prioritize by urgent/important
-- [`/consider:10-10-10`](./commands/consider/10-10-10.md) - Evaluate across time horizons
-- [`/consider:opportunity-cost`](./commands/consider/opportunity-cost.md) - Analyze what you give up
-- [`/consider:via-negativa`](./commands/consider/via-negativa.md) - Improve by removing
+| Command | Description |
+|---------|-------------|
+| `first-principles` | Break down to fundamentals and rebuild |
+| `inversion` | Solve backwards — what guarantees failure? |
+| `pareto` | Apply 80/20 rule to focus on what matters |
+| `second-order` | Think through consequences of consequences |
+| `5-whys` | Drill to root cause |
+| `occams-razor` | Find simplest explanation |
+| `one-thing` | Identify highest-leverage action |
+| `swot` | Map strengths, weaknesses, opportunities, threats |
+| `eisenhower-matrix` | Prioritize by urgent/important |
+| `10-10-10` | Evaluate across time horizons |
+| `opportunity-cost` | Analyze what you give up |
+| `via-negativa` | Improve by removing |
 
-### Deep Analysis
+## research
 
-Systematic debugging with methodical investigation.
+Structured research workflows with web search and analysis.
 
-- [`/debug`](./commands/debug.md) - Apply expert debugging methodology to investigate issues
+| Command | Description |
+|---------|-------------|
+| `competitive` | Competitive analysis |
+| `deep-dive` | Deep dive into a topic |
+| `feasibility` | Feasibility study |
+| `history` | Historical research |
+| `landscape` | Landscape survey |
+| `open-source` | Open source research |
+| `options` | Options analysis |
+| `technical` | Technical research |
 
-## Agents
+## reflection
 
-Specialized subagents used by the audit commands.
+Accumulate reusable knowledge across sessions using the ACE (Agentic Context Engineering) pattern.
 
-- [`skill-auditor`](./agents/skill-auditor.md) - Expert skill auditor for best practices compliance
-- [`slash-command-auditor`](./agents/slash-command-auditor.md) - Expert slash command auditor
-- [`subagent-auditor`](./agents/subagent-auditor.md) - Expert subagent configuration auditor
-- [`playbook-curator`](./agents/playbook-curator.md) - ACE-style playbook curator for knowledge accumulation
+| Component | Name | Description |
+|-----------|------|-------------|
+| Command | `session-reflect` | Analyze session and extract learnings |
+| Command | `playbook-update` | Apply reflection to playbook files |
+| Skill | session-reflect | End-of-session knowledge extraction |
+| Skill | playbook-update | Curator-managed playbook updates |
+| Agent | playbook-curator | ACE-style playbook curation with dedup |
 
-## Skills
+**Workflow:** End of session → `/session-reflect` → `/playbook-update` → knowledge persists to next session.
 
-### [Create Plans](./skills/create-plans/)
+See [playbook system docs](./docs/playbook-system.md) for details.
 
-Hierarchical project planning optimized for solo developer + Claude. Create executable plans that Claude runs, not enterprise documentation that sits unused.
+## extensibility
 
-**PLAN.md IS the prompt** - not documentation that gets transformed later. Brief → Roadmap → Research (if needed) → PLAN.md → Execute → SUMMARY.md.
+The complete Claude Code extension lifecycle: create, audit, and heal.
 
-**Domain-aware:** Optionally loads framework-specific expertise from `~/.claude/skills/expertise/` (e.g., macos-apps, iphone-apps) to make plans concrete instead of generic. Domain expertise skills are created with [create-agent-skills](#create-agent-skills) - exhaustive knowledge bases (5k-10k+ lines) that make task specifications framework-appropriate.
+| Component | Name | Description |
+|-----------|------|-------------|
+| Command | `create-agent-skill` | Create a new skill |
+| Command | `create-meta-prompt` | Create staged workflow prompts |
+| Command | `create-slash-command` | Create a new slash command |
+| Command | `create-subagent` | Create a new subagent |
+| Command | `create-hook` | Create a new hook |
+| Command | `audit-skill` | Audit skill for best practices |
+| Command | `audit-slash-command` | Audit command structure |
+| Command | `audit-subagent` | Audit subagent configuration |
+| Command | `heal-skill` | Fix skills based on execution issues |
+| Skill | create-agent-skills | Build skills from descriptions |
+| Skill | create-hooks | Build event-driven automation |
+| Skill | create-mcp-servers | Build MCP servers (Python/TypeScript) |
+| Skill | create-meta-prompts | Build staged workflow prompts |
+| Skill | create-slash-commands | Build commands with proper structure |
+| Skill | create-subagents | Build specialized Claude instances |
+| Agent | skill-auditor | Reviews skills for best practices |
+| Agent | slash-command-auditor | Reviews commands for structure |
+| Agent | subagent-auditor | Reviews agent configurations |
 
-**Quality controls:** Research includes verification checklists, blind spots review, critical claims audits, and streaming writes to prevent gaps and token limit failures.
+## planning
 
-**Context management:** Auto-handoff at 10% tokens remaining. Git versioning commits outcomes, not process.
+Project planning and execution — solo and team-orchestrated, with Linear integration.
 
-**Planning mode import:** `/create-plan @plan-file.md` imports a plan file (from Claude Code planning mode or any structured document) into the `.planning/` hierarchy, parsing agent assignments per phase, and syncing to Linear with project creation and agent labels.
+| Component | Name | Description |
+|-----------|------|-------------|
+| Command | `create-plan` | Create hierarchical project plans |
+| Command | `run-plan` | Execute plans solo or auto-dispatch from Linear |
+| Command | `plan-w-team` | Create team-orchestrated plans |
+| Command | `build` | Execute team plans with builder/validator agents |
+| Skill | create-plans | Full planning lifecycle (brief → roadmap → plan → execute) |
+| Agent | team/builder | Focused execution agent |
+| Agent | team/validator | Read-only verification agent |
 
-**Auto-dispatch:** `/run-plan` (no args) finds plan issues by `plan` label, resolves the unique plan-name label, then queries phases by `phase` + plan-name labels in "Todo" state. Identifies the assigned agent from issue labels and dispatches to that subagent. Linear state updates automatically (Todo → In Progress → Done).
+**Cross-plugin:** Optionally uses `expertise` plugin for domain-specific planning, and `todos` plugin for `/whats-next` handoffs.
 
-**Structured labels:** `/create-plan` applies three label categories: `plan` (project issues), `phase` (phase issues), and a unique plan-name label (all issues under the plan). This enables precise filtering — `/run-plan` queries by label instead of listing entire projects.
+## todos
 
-**Commands:** `/create-plan` (invoke skill or import plan file), `/run-plan` (auto-dispatch next phase or execute specific PLAN.md)
+Capture tasks mid-conversation and resume with full context. Integrates with Linear.
 
-See [create-plans README](./skills/create-plans/README.md) for full documentation.
+| Command | Description |
+|---------|-------------|
+| `add-to-todos` | Capture tasks with full context |
+| `check-todos` | Resume work on captured tasks |
+| `whats-next` | Create handoff document for fresh context |
 
-### [Create Agent Skills](./skills/create-agent-skills/)
+## tools
 
-Build skills by describing what you want. Asks clarifying questions, researches APIs if needed, and generates properly structured skill files.
+Standalone utility workflows.
 
-**Two types of skills:**
-1. **Task-execution skills** - Regular skills that perform specific operations
-2. **Domain expertise skills** - Exhaustive knowledge bases (5k-10k+ lines) that live in `~/.claude/skills/expertise/` and provide framework-specific context to other skills like [create-plans](#create-plans)
+| Component | Name | Description |
+|-----------|------|-------------|
+| Command | `docs-with-mermaid` | Generate technical docs with Mermaid diagrams |
+| Command | `debug` | Apply expert debugging methodology |
+| Command | `setup-ralph` | Set up Ralph Wiggum coding loop |
+| Skill | docs-with-mermaid | Documentation with diagram generation |
+| Skill | debug-like-expert | Systematic debugging with hypothesis testing |
+| Skill | setup-ralph | Ralph autonomous coding loop setup |
 
-**Context-aware:** Detects if you're in a skill directory and presents relevant options. Progressive disclosure guides you through complex choices.
+## prompting
 
-When things don't work perfectly, `/heal-skill` analyzes what went wrong and updates the skill based on what actually worked.
+Meta-prompting: separate analysis from execution for higher quality output.
 
-Commands: `/create-agent-skill`, `/heal-skill`, `/audit-skill`
+| Command | Description |
+|---------|-------------|
+| `create-prompt` | Generate optimized prompts with XML structure |
+| `run-prompt` | Execute saved prompts in sub-agent contexts |
+| `ask-me-questions` | Guided questioning for requirements gathering |
 
-### [Create Meta-Prompts](./skills/create-meta-prompts/)
+## expertise
 
-The skill-based evolution of the meta-prompting system. Builds prompts with structured outputs (research.md, plan.md) that subsequent prompts can parse. Adds automatic dependency detection to chain research → plan → implement workflows.
+Domain knowledge bases loaded by planning for framework-specific context. Each sub-skill is an exhaustive knowledge base (5k-10k+ lines).
 
-**Note:** For end-to-end project building, consider [create-plans](#create-plans) - it's the more structured evolution of this approach with full lifecycle management (brief → roadmap → execution → handoffs). Use create-meta-prompts for abstract workflows and Claude→Claude pipelines. Use create-plans for actually building projects.
+| Sub-skill | Description |
+|-----------|-------------|
+| iphone-apps | iOS/SwiftUI development patterns |
+| macos-apps | macOS app development patterns |
+| n8n-automations | n8n workflow automation |
 
-Commands: `/create-meta-prompt`
-
-### [Create Slash Commands](./skills/create-slash-commands/)
-
-Build commands that expand into full prompts when invoked. Describe the command you want, get proper YAML configuration with arguments, tool restrictions, and dynamic context loading.
-
-Commands: `/create-slash-command`, `/audit-slash-command`
-
-### [Create Subagents](./skills/create-subagents/)
-
-Build specialized Claude instances that run in isolated contexts. Describe the agent's purpose, get optimized system prompts with the right tool access and orchestration patterns.
-
-Commands: `/create-subagent`, `/audit-subagent`
-
-### [Create Hooks](./skills/create-hooks/)
-
-Build event-driven automation that triggers on tool calls, session events, or prompt submissions. Describe what you want to automate, get working hook configurations.
-
-Commands: `/create-hook`
-
-### [Create MCP Servers](./skills/create-mcp-servers/)
-
-Build Model Context Protocol (MCP) servers that expose tools, resources, and prompts to Claude. Supports Python and TypeScript implementations with API research, OAuth handling, and response optimization.
-
-**Architecture patterns:** Traditional (1-2 operations) or on-demand discovery (3+ operations) based on complexity.
-
-**Includes:** Adaptive intake, API research via subagent, code generation from templates, environment variable security, and installation in Claude Code + Claude Desktop.
-
-Commands: `/create-mcp-servers` (via skill routing)
-
-### [Debug Like Expert](./skills/debug-like-expert/)
-
-Deep analysis debugging mode for complex issues. Activates methodical investigation protocol with evidence gathering, hypothesis testing, and rigorous verification. Use when standard troubleshooting fails or when issues require systematic root cause analysis.
-
-Commands: `/debug`
-
-### [Session Reflect](./skills/session-reflect/)
-
-End-of-session analysis that extracts reusable knowledge using the ACE (Agentic Context Engineering) pattern. Reviews completed work, identifies helpful/harmful playbook bullets, and extracts new strategies, pitfalls, code patterns, and decisions.
-
-Commands: `/session-reflect`
-
-### [Playbook Update](./skills/playbook-update/)
-
-Applies playbook updates from session reflection via the playbook-curator sub-agent. Increments helpful/harmful counters, adds new bullets with unique IDs, performs semantic deduplication, and commits changes.
-
-Commands: `/playbook-update`
-
-See [playbook system docs](./docs/playbook-system.md) for full documentation.
-
-### [Setup Ralph](./skills/setup-ralph/)
-
-Set up Geoffrey Huntley's Ralph Wiggum autonomous coding loop. Ralph is an autonomous AI coding methodology that uses iterative loops with task selection, execution, and validation. Fresh context every iteration prevents context poisoning.
-
-**Three phases:** Planning (gap analysis → TODO list), Building (implement one task, validate, commit), Observation (you engineer the environment).
-
-**Key concepts:** Backpressure via tests/lints/builds, file I/O as state (IMPLEMENTATION_PLAN.md), parallel subagents for reads, prompts evolve through observation.
-
-Commands: `/setup-ralph`
-
-See [setup-ralph README](./skills/setup-ralph/README.md) for full documentation.
+Create new domain expertise with the `extensibility` plugin's `/create-agent-skill` command.
 
 ---
 
 ## Recommended Workflow
 
-**For building projects:** Use Claude Code planning mode to design phases with agent assignments, then `/create-plan @plan-file.md` to import into the `.planning/` hierarchy and sync to Linear. Run `/run-plan` (no args) to auto-dispatch phases to assigned agents in background. Or use `/create-plan` interactively and `/run-plan <path>` for direct execution.
-
-**For domain expertise:** Use [create-agent-skills](#create-agent-skills) to create exhaustive knowledge bases in `~/.claude/skills/expertise/`. These skills are automatically loaded by create-plans to make task specifications framework-specific instead of generic.
-
-**Other tools:** The [create-meta-prompts](#create-meta-prompts-1) skill and `/create-prompt` + `/run-prompt` commands are available for custom Claude→Claude pipelines that don't fit the project planning structure.
-
----
-
-**For knowledge accumulation:** Use `/session-reflect` at the end of each session, then `/playbook-update` to persist learnings. See [playbook system docs](./docs/playbook-system.md).
+1. **Install what you need:** Start with `planning` + `reflection` + `todos` for a complete project lifecycle
+2. **Build projects:** `/create-plan` → `/run-plan` (solo) or `/plan-w-team` → `/build` (team)
+3. **Accumulate knowledge:** `/session-reflect` → `/playbook-update` at end of session
+4. **Extend Claude:** Use `extensibility` to create new skills, commands, agents, hooks, and MCP servers
 
 ---
 
-**Based on:** [TÂCHES CC Resources](https://github.com/glittercowboy/taches-cc-resources) by Lex Christopherson
+**Based on:** [TACHES CC Resources](https://github.com/glittercowboy/taches-cc-resources) by Lex Christopherson
 **Community Ports:** [OpenCode](https://github.com/stephenschoettler/taches-oc-prompts)

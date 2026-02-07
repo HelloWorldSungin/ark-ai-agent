@@ -1,0 +1,9 @@
+{
+  "name": "planning",
+  "version": "1.0.0",
+  "description": "Project planning and execution — solo plans, team orchestration, Linear integration",
+  "author": {
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
+  }
+}

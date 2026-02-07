@@ -1,0 +1,9 @@
+{
+  "name": "research",
+  "version": "1.0.0",
+  "description": "Structured research workflows — competitive analysis, deep dives, feasibility studies, landscape surveys",
+  "author": {
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
+  }
+}

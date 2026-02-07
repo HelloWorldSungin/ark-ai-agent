@@ -1,0 +1,9 @@
+{
+  "name": "consider",
+  "version": "1.0.0",
+  "description": "Mental model thinking frameworks — first principles, inversion, 80/20, second-order effects, and more",
+  "author": {
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
+  }
+}

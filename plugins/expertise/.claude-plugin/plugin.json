@@ -1,0 +1,9 @@
+{
+  "name": "expertise",
+  "version": "1.0.0",
+  "description": "Domain knowledge bases — iOS, macOS, and n8n expertise for framework-specific planning",
+  "author": {
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
+  }
+}

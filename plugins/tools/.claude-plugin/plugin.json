@@ -1,0 +1,9 @@
+{
+  "name": "tools",
+  "version": "1.0.0",
+  "description": "Standalone utilities — Mermaid documentation, expert debugging, Ralph coding loops",
+  "author": {
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
+  }
+}

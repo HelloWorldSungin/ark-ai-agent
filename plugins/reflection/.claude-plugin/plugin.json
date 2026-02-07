@@ -1,0 +1,9 @@
+{
+  "name": "reflection",
+  "version": "1.0.0",
+  "description": "ACE playbook system — session reflection, knowledge accumulation, and playbook curation",
+  "author": {
+    "name": "SunginKim",
+    "email": "sungin@arknode.com"
+  }
+}

@@ -270,7 +270,7 @@ Then apply the **context window guard**:
    ```
    ⚠️ Context window is at ~[X]%. To maintain quality, stopping here.
 
-   Run /whats-next to create a handoff, then start a fresh session and run /run-plan to continue.
+   Run /whats-next to create a handoff (requires todos plugin), then start a fresh session and run /run-plan to continue.
    ```
 
 3. **If context usage is below 45%**, loop back to **Step 2** — find the next "Todo" phase and dispatch it automatically. Do NOT ask for confirmation; proceed immediately.
@@ -279,7 +279,7 @@ Then apply the **context window guard**:
    ```
    🎉 All phases complete! Project finished.
 
-   Run /whats-next to create a final handoff document.
+   Run /whats-next to create a final handoff document (requires todos plugin).
    ```
 
 {{/if}}
