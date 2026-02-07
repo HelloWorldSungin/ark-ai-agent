@@ -196,12 +196,12 @@ Lightweight iterative planning using Claude Code's native plan mode with extensi
 
 | Component | Name | Description |
 |-----------|------|-------------|
-| Command | `plan` | Scan extensions, enter native plan mode, save to `.planning/` |
+| Command | `planning` | Scan extensions, enter native plan mode, save to `.planning/` |
 | Command | `execute` | Execute plan tasks with context monitoring (~50% checkpoint) |
 | Command | `update-plan` | Assess progress via git, revise plan in native plan mode |
 | Agent | `extension-scanner` | Read-only scanner for available commands, skills, and agents |
 
-**Workflow:** `/plan "what to build"` → (fresh session) `/execute` → `/update-plan` → (fresh session) `/execute` → done
+**Workflow:** `/planning "what to build"` → (fresh session) `/execute` → `/update-plan` → (fresh session) `/execute` → done
 
 **Key difference from `planning`:** Uses Claude Code's native `EnterPlanMode`/`ExitPlanMode` instead of custom plans-as-prompts. Simpler cycle, iterative by design.
 

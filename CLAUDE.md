@@ -60,7 +60,7 @@ plugins/<name>/
 | **tools** | 3 (docs-with-mermaid, debug, setup-ralph) | 3 | 0 | development |
 | **prompting** | 3 (create-prompt, run-prompt, ask-me-questions) | 0 | 0 | productivity |
 | **expertise** | 0 | 1 (3 domain sub-skills: iOS, macOS, n8n) | 0 | development |
-| **native-workflow** | 3 (plan, execute, update-plan) | 0 | 1 (extension-scanner) | productivity |
+| **native-workflow** | 3 (planning, execute, update-plan) | 0 | 1 (extension-scanner) | productivity |
 
 ### Cross-Plugin Dependencies
 

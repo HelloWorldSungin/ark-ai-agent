@@ -12,7 +12,7 @@ allowed-tools:
   - ExitPlanMode
 ---
 
-You are executing the `/plan` command — a three-phase workflow that creates an implementation plan using Claude Code's native plan mode, with awareness of available extensions.
+You are executing the `/planning` command — a three-phase workflow that creates an implementation plan using Claude Code's native plan mode, with awareness of available extensions.
 
 **Input:** $ARGUMENTS
 

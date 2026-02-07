@@ -25,7 +25,7 @@ You are executing the `/execute` command — loads a plan from `.planning/` and 
 1. **Resolve plan path:**
    - If `$ARGUMENTS` provides a path: use it directly
    - If no path provided: find the most recently modified `.planning/*.md` file
-   - If no plans found: error — "No plans found in `.planning/`. Run `/plan` first to create one."
+   - If no plans found: error — "No plans found in `.planning/`. Run `/planning` first to create one."
 
 2. **Read the plan file** and parse its sections:
    - **Objective** — what we're building
