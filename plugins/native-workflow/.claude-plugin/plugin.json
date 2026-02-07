@@ -1,6 +1,6 @@
 {
   "name": "native-workflow",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Native plan mode workflow with extension awareness and iterative execution",
   "author": { "name": "SunginKim", "email": "sungin@arknode.com" }
 }
